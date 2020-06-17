@@ -6,3 +6,15 @@
 
 * [ ] Design yaml configuration
 * [ ] Check for config errors
+
+# CLI
+
+* [ ] Enable multi-file running (still validate schema csv1 csv2 csv3...)
+
+# Performance
+
+* [ ] Parallelize rules
+
+# Schema
+
+* [ ] Infer delimiter
