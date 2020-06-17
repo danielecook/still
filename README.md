@@ -94,19 +94,17 @@ color: any("red", "blue", "green")
 
 __`range(lower, upper)`__
 
-Tests whether a value falls between `lower` and upper`.
+Tests whether a value falls between `lower` and `upper`.
 
 ```
 rating: range(0,10)
 ```
 
 __`is_positive()`__
-
-Tests that a cell is positive.
-
 __`is_negative()`__
 
-Tests that a cell is negative.
+Tests that a cell is positive or negative.
+
 
 ### Strings
 
