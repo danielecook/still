@@ -1,10 +1,10 @@
 # still
 
-`still` is a program for validating tabular data from CSV, TSV, and Excel. This process has also been referred to as linting, but it is more akin to unit testing.
+`still` is a program for validating tabular data from CSV, TSV, and Excel.
 
 ## Quick Start
 
-Generate a schema. Directives start with `@` and refer to global options. These are followed by column names and expressions.
+Generate a schema. Directives start with `@` and refer to global options. These are followed by column names and test expressions.
 
 __`cars.schema`__
 ```
@@ -22,7 +22,7 @@ Then run the command line tool:
 still validate cars.schema cars.tsv
 ```
 
-# Expressions
+# Test Expressions
 
 ## Vector Functions
 
@@ -40,7 +40,7 @@ column: if_else(column == "AB1", height > 50, height < 50)
 
 __`max(...)`__
 
-Returns the maximum of arguments passed; Operates at the __row__ level.
+Returns the max of arguments passed; Operates at the __row__ level.
 
 ```
 orders: max(1,2,3) == 3         # Returns 3 == 3; true
@@ -53,8 +53,6 @@ __`min(...)`__
 Returns the minimum of arguments passed; Operates at the __row__ level.
 
 ## Test Functions
-
-For simplicity, a `cell` below refers to a value in a column being evaluated.
 
 ### Background
 
@@ -78,7 +76,7 @@ status: contains(status, "# NOTE") && contains(time, "# NOTE")
 
 __`is(value)`__
 
-Tests whether a cell matches a value.
+Tests whether a value matches.
 
 ```
 color: is("red")
@@ -86,7 +84,7 @@ color: is("red")
 
 __`not(value)`__
 
-Tests whether a cell  does not match a value.
+Tests whether a value does not match.
 
 ```
 is_passed: not("fail")
@@ -96,7 +94,7 @@ is_passed: not("fail")
 
 __`any(...)`__
 
-Tests whether a cell matches any of the specified values.
+Tests whether a value matches any of passed arguments.
 
 ```
 color: any("red", "blue", "green")
@@ -106,7 +104,7 @@ color: any("red", "blue", "green")
 
 __`range(lower, upper)`__
 
-Tests whether a value falls between `lower` and `upper`.
+Tests whether a value falls between `lower` and `upper` inclusive.
 
 ```
 rating: range(0,10)
@@ -115,26 +113,26 @@ rating: range(0,10)
 __`is_positive()`__
 __`is_negative()`__
 
-Tests whether a cell is positive or negative.
+Tests whether a value is positive or negative.
 
 
 ### Strings
 
 __`contains(substr)`__
 
-Tests for a substring present in column
+Tests for the presence of a substring in a value.
 
 __`regex(expression)`__
 
-Tests whether a cell matches a regular expression.
+Tests whether a value matches a regular expression.
 
 __`uppercase()`__
 
-Tests whether a string is all uppercase.
+Tests whether a value is all uppercase.
 
 __`lowercase()`__
 
-Tests whether a string is all lowercase.
+Tests whether a value is all lowercase.
 
 __`length(low, high = None)`__
 
@@ -166,15 +164,15 @@ Tests that column contains `true`, `TRUE`, `false`, or `FALSE`
 
 __`is_date()`__
 
-Checks whether a value looks like a date using strict criteria. `is_date()` will fail on ambiguous date strings. For example, `02/03/2020` is interpretted differently in Europe vs. the US but `2020-02-03` is not.
+Checks whether a value is date-like using strict criteria. `is_date()` will fail on ambiguous date strings. For example, `02/03/2020` is interpretted differently in Europe vs. the US but `2020-02-03` is not.
 
 __`is_date_relaxed()`__
 
-Checks whether a value looks like a date with relaxed criteria. `02/03/2020` would pass.
+Checks whether a value is date-like with potential ambiguity. `02/03/2020` would pass.
 
 __`is_date_format(format)`__
 
-Check whether a column matches a specified date format. Format is specified as any date format. Formats can be specified like this:
+Check whether a column matches a specified date format. Formats can be specified as any date like this:
 
 ```
 September 17, 2012, 10:10:09
@@ -184,9 +182,13 @@ oct. 7, 70
 2014-04-26
 ```
 
-See the [araddon/dateparse](https://github.com/araddon/dateparse/blob/master/example/main.go#L12) for more examples.
+```
+date_of_birth: is_date_format("June 10, 1987")
+```
 
-__Important!__ You will probably need to escape date values using brackets (`[]`) or a double backslash (`\\`) for certain characters. For example `2020-02-10` must be escaped like this:
+See [araddon/dateparse](https://github.com/araddon/dateparse/blob/master/example/main.go#L12) for more examples.
+
+__Important!__ You need to escape date values containing dashes using brackets (`[]`) or a double backslash (`\\`). For example `2020-02-10` is escaped like this:
 
 ```
 collection_date: is_date_format("[2020-02-10]")
