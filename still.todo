@@ -2,10 +2,36 @@
 
 * [ ] Summarize fields, infer data types
 
+# schema
+
+* [ ] Version
+* [ ] Comments
+* [ ] @rules (e.g. @ignoreCase)
+* [ ] Configure functions to allow for explicit column references
+* [ ] Figure out how to handle NA columns @ignoreNA ?
+* [ ] Optional directive
+
+# input
+
+* [ ] excel
+* [ ] gzipped files
+
+# output
+
+* [ ] Filter invalid records?
+
+# Data dictionary
+
+* [ ] Sumarize fields and infer data types and output
+* [ ] Output formats
+    * [ ] HTML
+    * [ ] Markdown
+    * [ ] TSV
+* [ ] Cardinality
+
 # config
 
-* [ ] Design yaml configuration
-* [ ] Check for config errors
+* [ ] Raise errors on malformed configuration
 
 # CLI
 
@@ -13,7 +39,85 @@
 
 # Performance
 
+* [ ] Pre-process evaluation of rules
 * [ ] Parallelize rules
+
+# Functions
+
+* [ ] Schema	::=	Prolog Body	
+* [ ] Prolog	::=	VersionDecl GlobalDirectives	
+* [ ] VersionDecl	::=	("version 1.0" | "version 1.1")	
+* [ ] GlobalDirectives	::=	SeparatorDirective? QuotedDirective? TotalColumnsDirective? PermitEmptyDirective? (NoHeaderDirective | IgnoreColumnNameCaseDirective)?	/* xgc:unordered */
+* [ ] DirectivePrefix	::=	"@"	
+* [ ] SeparatorDirective	::=	DirectivePrefix "separator" (SeparatorTabExpr | SeparatorChar)	
+* [x] SeparatorTabExpr	::=	"TAB" | '\t'	
+* [x] SeparatorChar	::=	CharacterLiteral	
+* [ ] QuotedDirective	::=	DirectivePrefix "quoted"	
+* [ ] TotalColumnsDirective	::=	DirectivePrefix "totalColumns" PositiveNonZeroIntegerLiteral	
+* [ ] PermitEmptyDirective	::=	DirectivePrefix "permitEmpty"	
+* [ ] NoHeaderDirective	::=	DirectivePrefix "noHeader"	
+* [ ] IgnoreColumnNameCaseDirective	::=	DirectivePrefix "ignoreColumnNameCase"	
+* [ ] Body	::=	BodyPart+	
+* [ ] BodyPart	::=	Comment* ColumnDefinition Comment*	
+* [ ] Comment	::=	SingleLineComment | MultiLineComment	
+* [ ] SingleLineComment	::=	//[\S\t ]*	/* xgc:regular-expression */
+* [ ] MultiLineComment	::=	\/\*(?:[^*\r\n]+|(?:\r?\n))*\*\/	/* xgc:regular-expression */
+* [ ] ColumnDefinition	::=	(ColumnIdentifier | QuotedColumnIdentifier) ":" ColumnRule	
+* [ ] ColumnIdentifier	::=	PositiveNonZeroIntegerLiteral | Ident	
+* [ ] QuotedColumnIdentifier	::=	StringLiteral	
+* [ ] ColumnRule	::=	ColumnValidationExpr* ColumnDirectives	
+* [ ] ColumnDirectives	::=	OptionalDirective? MatchIsFalseDirective? IgnoreCaseDirective? WarningDirective?	/* xgc:unordered */
+* [ ] OptionalDirective	::=	DirectivePrefix "optional"	
+* [ ] MatchIsFalseDirective	::=	DirectivePrefix "matchIsFalse"	
+* [ ] IgnoreCaseDirective	::=	DirectivePrefix "ignoreCase"	
+* [ ] WarningDirective	::=	DirectivePrefix "warningDirective"	
+* [x] CombinatorialExpr	::=	OrExpr | AndExpr	
+* [x] OrExpr	::=	NonCombinatorialExpr "or" ColumnValidationExpr	
+* [x] AndExpr	::=	NonCombinatorialExpr "and" ColumnValidationExpr	
+* [ ] ExplicitContextExpr	::=	ColumnRef "/"	
+* [x] ColumnRef	::=	"$" (ColumnIdentifier | QuotedColumnIdentifier)	
+* [x] IsExpr	::=	"is(" StringProvider ")"	
+* [x] AnyExpr	::=	"any(" StringProvider ")"	
+* [x] NotExpr	::=	"not(" StringProvider ")"	
+* [x] InExpr	::=	"in(" StringProvider ")"	
+* [x] StartsWithExpr	::=	"starts(" StringProvider ")"	
+* [x] EndsWithExpr	::=	"ends(" StringProvider ")"	
+* [x] RegExpExpr	::=	"regex(" StringLiteral ")"	
+* [x] RangeExpr	::=	"range(" (NumericOrAny "," NumericLiteral | NumericLiteral "," NumericOrAny) ")"	/* range is inclusive */
+* [ ] NumericOrAny	::=	NumericLiteral | WildcardLiteral
+* [x] LengthExpr	::=	"length(" (PositiveIntegerOrAny ",")? PositiveIntegerOrAny ")"	
+* [ ] PositiveIntegerOrAny	::=	PositiveIntegerLiteral | WildcardLiteral	
+* [ ] EmptyExpr	::=	"empty"	
+* [ ] NotEmptyExpr	::=	"notEmpty"	
+* [ ] UniqueExpr	::=	"unique" ("(" ColumnRef ("," ColumnRef)* ")")?	
+* [ ] UriExpr	::=	"uri"	
+* [x] XsdDateTimeExpr	::=	"xDateTime" ("(" XsdDateTimeLiteral "," XsdDateTimeLiteral ")")?	
+* [x] XsdDateTimeWithTimeZoneExpr	::=	"xDateTimeTz" ("(" XsdDateTimeWithTimeZoneLiteral "," XsdDateTimeWithTimeZoneLiteral ")")?	
+* [x] XsdDateExpr	::=	"xDate" ("(" XsdDateLiteral "," XsdDateLiteral ")")?	
+* [x] XsdTimeExpr	::=	"xTime" ("(" XsdTimeLiteral "," XsdTimeLiteral ")")?	
+* [x] UkDateExpr	::=	"ukDate" ("(" UkDateLiteral "," UkDateLiteral ")")?	
+* [x] DateExpr	::=	"date(" StringProvider "," StringProvider "," StringProvider ("," XsdDateLiteral "," XsdDateLiteral)? ")"	
+* [x] PartialUkDateExpr	::=	"partUkDate"	
+* [x] PartialDateExpr	::=	"partDate(" StringProvider "," StringProvider "," StringProvider ")"	
+* [ ] Uuid4Expr	::=	"uuid4"	
+* [ ] PositiveIntegerExpr -------> RENAMED is_positive
+* [x] UpperCaseExpr	::=	"upperCase"	
+* [x] LowerCaseExpr	::=	"lowerCase"	
+* [x] IdenticalExpr	::=	"positiveInteger"	
+* [ ] ExternalSingleExpr	::=	ExplicitContextExpr? (FileExistsExpr | IntegrityCheckExpr | ChecksumExpr | FileCountExpr)	
+* [ ] FileExistsExpr	::=	"fileExists" ("(" StringProvider ")")?	
+* [ ] IntegrityCheckExpr	::=	"integrityCheck" "(" (StringProvider ",")? (StringProvider ",")? ("\"includeFolder\"" | "\"excludeFolder\"") ")"	
+* [ ] ChecksumExpr	::=	"checksum(" FileExpr "," StringLiteral ")"	
+* [ ] FileExpr	::=	"file(" (StringProvider ",")? StringProvider ")"	
+* [ ] FileCountExpr	::=	"fileCount(" FileExpr ")"	
+* [ ] StringProvider	::=	ColumnRef | StringLiteral | ConcatExpr | NoExtExpr	
+* [ ] ConcatExpr	::=	"concat(" StringProvider ("," StringProvider)+ ")"	
+* [ ] NoExtExpr	::=	"noExt(" StringProvider ")"	
+* [ ] ParenthesizedExpr	::=	"(" ColumnValidationExpr+ ")"	
+* [ ] ConditionalExpr	::=	IfExpr | SwitchExpr	
+* [ ] IfExpr	::=	"if(" (CombinatorialExpr | NonConditionalExpr) "," ColumnValidationExpr+ ("," ColumnValidationExpr+)? ")"	
+* [ ] SwitchExpr	::=	"switch(" SwitchCaseExpr+ ("," ColumnValidationExpr+)? ")"	
+* [ ] SwitchCaseExpr	::=	"if(" (CombinatorialExpr | NonConditionalExpr) "," ColumnValidationExpr+ ")"
 
 # Schema
 

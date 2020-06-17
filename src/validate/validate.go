@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -13,16 +14,65 @@ import (
 	"github.com/danielecook/still/src/schema"
 )
 
+func isNil(val interface{}) bool {
+	return nil == val
+}
+
+var utilFunctions = map[string]govaluate.ExpressionFunction{
+	// Utility Functions
+	"str_len": strLen,
+	"max":     maxFunc,
+	"min":     minFunc,
+	"if_else": ifElse,
+}
+
 // Define functions
-var functions = map[string]govaluate.ExpressionFunction{
-	"strlen": func(args ...interface{}) (interface{}, error) {
-		length := len(args[0].(string))
-		return (float64)(length), nil
-	},
-	"in_range": func(args ...interface{}) (interface{}, error) {
-		fmt.Printf("%#v", args)
-		return (bool)(true), nil
-	},
+var testFunctions = map[string]govaluate.ExpressionFunction{
+	// Test Functions
+	"is":  is,
+	"not": not,
+	// Sets
+	"range": rangeFunc,
+	"any":   any,
+	// Strings
+	"regex":     regex,
+	"uppercase": uppercase,
+	"lowercase": lowercase,
+	"starts":    starts,
+	"ends":      ends,
+	"contains":  contains,
+	"length":    length,
+	// Numbers
+	"is_positive": isPositive,
+	"is_negative": isNegative,
+	// Types
+	"is_numeric": isNumeric,
+	"is_int":     isInt,
+	"is_bool":    isBool,
+	// Dates
+	"is_date":         isDate,
+	"is_date_relaxed": isDateRelaxed,
+	"is_date_format":  isDateFormat,
+}
+
+func combineFunctionSets(ms ...map[string]govaluate.ExpressionFunction) map[string]govaluate.ExpressionFunction {
+	res := map[string]govaluate.ExpressionFunction{}
+	for _, m := range ms {
+		for k, v := range m {
+			res[k] = v
+		}
+	}
+	return res
+}
+
+func functionKeys(functions map[string]govaluate.ExpressionFunction) []string {
+	evalFuncs := make([]string, len(functions))
+	i := 0
+	for k := range functions {
+		evalFuncs[i] = k
+		i++
+	}
+	return evalFuncs
 }
 
 func indexOf(word string, data []string) int {
@@ -34,10 +84,15 @@ func indexOf(word string, data []string) int {
 	return -1
 }
 
-func typeConvert(val string) interface{} {
+func typeConvert(val string, NA_vals []string) interface{} {
 	/*
 		Automatically converts types
 	*/
+	for _, na := range NA_vals {
+		if val == na {
+			return nil
+		}
+	}
 
 	// Is it a Bool?
 	if strings.ToUpper(val) == "TRUE" {
@@ -99,26 +154,39 @@ func RunValidation(schema schema.SchemaRules, data string) bool {
 		// Set parameters
 		parameters := make(map[string]interface{}, len(record))
 		for idx := range record {
-			parameters[colnames[idx]] = typeConvert(record[idx])
+			parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
 		}
+		// Add additional parameters
+		// Bools
+		parameters["true"] = true
+		parameters["false"] = false
+		// ??? ADD parameters["NA"] = nil???
 
 		for _, col := range schema.Columns {
 			// Add in current column
-			parameters["current_var_"] = typeConvert(record[indexOf(col.Name, colnames)])
-
-			evalFuncs := make([]string, len(functions))
-			for k, _ := range functions {
-				evalFuncs = append(evalFuncs, k)
+			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
+			fmt.Println(currentVar)
+			// TODO: Allow evaluation of NA values conditionally?
+			if isNil(currentVar) {
+				continue
 			}
+			parameters["current_var_"] = currentVar
+
+			var funcSet = strings.Join(functionKeys(testFunctions), "|")
+			//var colSet = strings.Join(colnames, "|")
 			var rule string
-			for _, function := range evalFuncs {
-				rule = strings.Replace(col.Rule,
-					fmt.Sprintf("%s(", function),
-					fmt.Sprintf("%s(current_var_,", function), 1000)
+			// TODO: Need to test for explict column references and leave those intact;
+			// if implicit, then replace; funcMatch.ReplaceAllStringFunc? Or
+			// a more complex solution
+			funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
+			if err != nil {
+				log.Fatal(err)
 			}
-			fmt.Println(rule)
-
+			rule = funcMatch.ReplaceAllString(col.Rule, "$1(current_var_,")
+			// If function takes single value, remove trailing comma
+			rule = strings.Replace(rule, ",)", ")", -1)
 			// TODO : Parse these just once!
+			functions := combineFunctionSets(testFunctions, utilFunctions)
 			expression, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
 			if err != nil {
 				log.Fatal(err)
@@ -127,7 +195,7 @@ func RunValidation(schema schema.SchemaRules, data string) bool {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("%v\n", result)
+			fmt.Printf("%s: %s --> %v\n\n", col.Name, rule, result)
 		}
 
 	}

@@ -44,7 +44,15 @@ func parseDirectiveInt(line string) int {
 }
 
 func parseDirectiveStrArray(line string) []string {
-	return strings.Split(parseDirectiveValue(line), ",")
+	fields := strings.Fields(line)
+	fields = fields[1:]
+	// Set empty strings
+	for idx, val := range fields {
+		if val == "\"\"" || val == "''" {
+			fields[idx] = ""
+		}
+	}
+	return fields
 }
 
 func parseColumn(line string) Col {
@@ -62,24 +70,8 @@ func parseColumn(line string) Col {
 	col.Name = colmatch[1]
 	col.Rule = colmatch[2]
 	col.Description = strings.Trim(colmatch[3], "# ")
-	fmt.Printf("%v", col)
 	return col
 }
-
-// def boolify(s):
-//     if s == 'True':
-//         return True
-//     if s == 'False':
-//         return False
-//     raise ValueError("huh?")
-
-// def autoconvert(s):
-//     for fn in (boolify, int, float):
-//         try:
-//             return fn(s)
-//         except ValueError:
-//             pass
-//     return s
 
 func setSeparator(sep string) rune {
 	switch sep {
@@ -111,7 +103,9 @@ func ParseSchema(schemaFile string) SchemaRules {
 				Schema.ExactColumns = parseDirectiveInt(line)
 			case strings.HasPrefix(line, "@sep"):
 				Schema.Separater = setSeparator(parseDirectiveValue(line))
-
+			case strings.HasPrefix(line, "@na_values"):
+				Schema.NA = parseDirectiveStrArray(line)
+				fmt.Println(Schema.NA)
 			case strings.HasPrefix(line, "@"):
 				log.Fatal(fmt.Sprintf("%s is an unknown directive", line))
 			default:

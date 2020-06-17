@@ -41,7 +41,6 @@ func Run() {
 				input := c.Args().Get(1)
 				useSchema := schema.ParseSchema(schemaFname)
 				validate.RunValidation(useSchema, input)
-				//fmt.Printf("%#v", useSchema)
 				return nil
 			},
 		},
