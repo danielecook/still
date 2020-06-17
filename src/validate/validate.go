@@ -45,7 +45,7 @@ func RunValidation(schema schema.SchemaRules, data string) bool {
 		result, err := expression.Evaluate(nil)
 		fmt.Println(result)
 		fmt.Printf("%#v\n", colnames)
-		fmt.Printf("%#v\n", record)
+		//fmt.Printf("%#v\n", record)
 	}
 
 	return true

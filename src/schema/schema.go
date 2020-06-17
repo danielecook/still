@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
 type Col struct {
-	ColName     string
+	Name        string
 	Rule        string
 	Description string
 }
@@ -26,24 +27,43 @@ type SchemaRules struct {
 	Columns []Col
 }
 
-func parseDirectiveValue(directive string) string {
-	i := strings.Fields(directive)
+func parseDirectiveValue(line string) string {
+	i := strings.Fields(line)
 	if len(i) == 1 {
 		log.Fatal(fmt.Sprintf("Missing value for directive %s", i[0]))
 	}
 	return i[1]
 }
 
-func parseDirectiveInt(directive string) int {
-	i, err := strconv.Atoi(parseDirectiveValue(directive))
+func parseDirectiveInt(line string) int {
+	i, err := strconv.Atoi(parseDirectiveValue(line))
 	if err != nil {
 		log.Fatal(err)
 	}
 	return i
 }
 
-func parseDirectiveStrArray(directive string) []string {
-	return strings.Split(parseDirectiveValue(directive), ",")
+func parseDirectiveStrArray(line string) []string {
+	return strings.Split(parseDirectiveValue(line), ",")
+}
+
+func parseColumn(line string) Col {
+	/*
+		Parses a column specification
+
+		latitude: in_range(-90, 90) # The latitude
+	*/
+	reColumn, err := regexp.Compile("^([^: ]+):([^$#]+)(#.*$)?")
+	if err != nil {
+		log.Fatal(err)
+	}
+	colmatch := reColumn.FindStringSubmatch(line)
+	col := Col{}
+	col.Name = colmatch[1]
+	col.Rule = colmatch[2]
+	col.Description = strings.Trim(colmatch[3], "# ")
+	fmt.Printf("%v", col)
+	return col
 }
 
 func setSeparator(sep string) rune {
@@ -84,9 +104,9 @@ func ParseSchema(schemaFile string) SchemaRules {
 			}
 		}
 
-		// Parse column rules
+		// Parse columns
 		if strings.HasPrefix(line, "@") == false {
-			Schema.Colnames
+			Schema.Columns = append(Schema.Columns, parseColumn(line))
 		}
 	}
 

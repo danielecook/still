@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -42,7 +41,7 @@ func Run() {
 				input := c.Args().Get(1)
 				useSchema := schema.ParseSchema(schemaFname)
 				validate.RunValidation(useSchema, input)
-				fmt.Printf("%#v", useSchema)
+				//fmt.Printf("%#v", useSchema)
 				return nil
 			},
 		},
