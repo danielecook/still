@@ -42,6 +42,8 @@ Returns the minimum of arguments passed; Operates at the __row__ level.
 
 ## Test Functions
 
+For simplicity, a `cell` below refers to a value in a column being evaluated.
+
 ### Background
 
 Test functions all return a boolean (true/false) and allow you to evaluate conditions on a column. For brevity, they are implicitely passed the specified column when none is specified. For example:
@@ -49,10 +51,10 @@ Test functions all return a boolean (true/false) and allow you to evaluate condi
 ```
 status: contains("# NOTE")
 # Converted to:
-contains(status, "# NOTE")
+status: contains(status, "# NOTE")
 ```
 
-You can still be explicit when referencing the column of interest, and you can also combine the expression with a test function on another column:
+You can still be explicit when referencing the column of interest, and you can also combine test functions using different columns:
 
 ```
 status: contains("# NOTE") && contains(color, "red")
@@ -60,15 +62,61 @@ status: contains("# NOTE") && contains(color, "red")
 status: contains(status, "# NOTE") && contains(time, "# NOTE")
 ```
 
-### 
+### Basic
+
+__`is(value)`__
+
+Tests whether a cell matches a value.
+
+```
+color: is("red")
+```
+
+__`not(value)`__
+
+Tests whether a cell  does not match a value.
+
+```
+is_passed: not("fail")
+```
+
+### Sets
+
+__`any(...)`__
+
+Tests whether a cell matches any of the specified values.
+
+```
+color: any("red", "blue", "green")
+```
 
 ### Numbers
+
+__`range(lower, upper)`__
+
+Tests whether a value falls between `lower` and upper`.
+
+```
+rating: range(0,10)
+```
+
+__`is_positive()`__
+
+Tests that a cell is positive.
+
+__`is_negative()`__
+
+Tests that a cell is negative.
 
 ### Strings
 
 __`contains(substr)`__
 
 Tests for a substring present in column
+
+__`regex(expression)`__
+
+Tests whether a cell matches a regular expression.
 
 __`uppercase()`__
 
@@ -92,6 +140,17 @@ column: length(10, "*")
 # Test for range of lengths
 column: length(10, 20)
 ```
+
+#### Types
+
+__`is_numeric()`__
+__`is_int()`__
+
+Test for numeric or integer values.
+
+__`is_bool()`__
+
+Tests that column contains `true`, `TRUE`, `false`, or `FALSE`
 
 #### Dates
 
