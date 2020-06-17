@@ -12,9 +12,11 @@ colname: range(0, 10)    # Description: Great
 
 # Expressions
 
+## Vector Functions
+
 ## Utility Functions
 
-Utility functions operate at the row level, and d
+Utility functions operate at the row level.
 
 __`if_else(condition, expr_if_true, expr_if_false)`__
 
@@ -23,6 +25,20 @@ The `if_else` function evaluates an expression and returns `expr_if_true` or `ex
 ```
 column: if_else(column == "AB1", height > 50, height < 50)
 ```
+
+__`max(...)`__
+
+Returns the maximum of arguments passed; Operates at the __row__ level.
+
+```
+orders: max(1,2,3) == 3         # Returns 3 == 3; true
+items: max(col1, col2, col3)    # Returns the max value for the given row of col1-3.
+inventory: max(col1)            # This does not return the maximum of col1; col1 is passed as a scaler value.
+```
+
+__`min(...)`__
+
+Returns the minimum of arguments passed; Operates at the __row__ level.
 
 ## Test Functions
 
@@ -43,6 +59,10 @@ status: contains("# NOTE") && contains(color, "red")
 # Converted to:
 status: contains(status, "# NOTE") && contains(time, "# NOTE")
 ```
+
+### 
+
+### Numbers
 
 ### Strings
 
@@ -79,7 +99,7 @@ __`is_date()`__
 
 Checks whether a value looks like a date using strict criteria. `is_date()` will fail on ambiguous date strings. For example, `02/03/2020` is interpretted differently in Europe vs. the US but `2020-02-03` is not.
 
-__`is_date_related()`__
+__`is_date_relaxed()`__
 
 Checks whether a value looks like a date with relaxed criteria. `02/03/2020` would pass.
 
