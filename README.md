@@ -33,7 +33,7 @@ Returns the maximum of arguments passed; Operates at the __row__ level.
 ```
 orders: max(1,2,3) == 3         # Returns 3 == 3; true
 items: max(col1, col2, col3)    # Returns the max value for the given row of col1-3.
-inventory: max(col1)            # This does not return the maximum of col1; col1 is passed as a scaler value.
+inventory: max(col1)            # This does not return the max for an entire column; col1 is a scaler value.
 ```
 
 __`min(...)`__

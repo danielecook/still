@@ -11,6 +11,14 @@
 * [ ] Figure out how to handle NA columns @ignoreNA ?
 * [ ] Optional directive
 
+# @vectorops
+--> Enable vector operations and functions?
+--> Loads entire dataset and passes vectors
+max_($) OR max_ indicates vector...
+min_($)
+
+# @bloom_uniq
+
 # input
 
 * [ ] excel
@@ -19,6 +27,9 @@
 # output
 
 * [ ] Filter invalid records?
+* [ ] JSON with invalids
+* [ ] HTML with invalids
+* [ ] Text file with invalids
 
 # Data dictionary
 
@@ -36,6 +47,7 @@
 # CLI
 
 * [ ] Enable multi-file running (still validate schema csv1 csv2 csv3...)
+* [ ] ansi-style log (e.g. nextflow?)
 
 # Performance
 
