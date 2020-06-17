@@ -1,14 +1,26 @@
 # still
-Unit testing for spreadsheets
 
+`still` is a program for validating tabular data from CSV, TSV, and Excel. This process has also been referred to as linting, but it is more akin to unit testing.
+
+## Quick Start
+
+Generate a schema. Directives start with `@` and refer to global options. These are followed by column names and expressions.
+
+__`cars.schema`__
+```
+@separater TAB
+mpg: is_numeric()
+cyl: range(2,8)
+hp: is_positive() && range(10, 500)
+vs: is(0) || is(1)
+am: any(0, 1)
+```
+
+Then run the command line tool:
 
 ```
-@separator TAB
-@columns 20
-@fixed_order
-colname: range(0, 10)    # Description: Great
+still validate cars.schema cars.tsv
 ```
-
 
 # Expressions
 
@@ -103,7 +115,7 @@ rating: range(0,10)
 __`is_positive()`__
 __`is_negative()`__
 
-Tests that a cell is positive or negative.
+Tests whether a cell is positive or negative.
 
 
 ### Strings
@@ -180,3 +192,7 @@ __Important!__ You will probably need to escape date values using brackets (`[]`
 collection_date: is_date_format("[2020-02-10]")
 collection_date: is_date_format("2020\\-02\\-10")
 ```
+
+## Notes
+
+`still` is largely influenced by [csv-validate](http://digital-preservation.github.io/csv-validator/), but offers more flexibility when validating tabular data.

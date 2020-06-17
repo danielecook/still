@@ -46,7 +46,8 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"is_positive": isPositive,
 	"is_negative": isNegative,
 	// Types
-	// TODO: ADD is_float()
+	// TODO: ADD is_float()?
+	// Add is_string()
 	"is_numeric": isNumeric,
 	"is_int":     isInt,
 	"is_bool":    isBool,
