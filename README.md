@@ -7,7 +7,8 @@
 Generate a schema. Directives start with `@` and refer to global options. These are followed by column names and test expressions.
 
 __`cars.schema`__
-```
+
+```yaml
 @separater TAB
 mpg: is_numeric()
 cyl: range(2,8)
@@ -34,7 +35,7 @@ Utility functions operate at the row level.
 
 The `if_else` function evaluates an expression and returns `expr_if_true` or `expr_if_false` depending on the evaluation of `condition`.
 
-```
+```yaml
 column: if_else(column == "AB1", height > 50, height < 50)
 ```
 
@@ -78,7 +79,7 @@ status: contains(status, "# NOTE") && contains(time, "# NOTE")
 
 Tests whether a value matches.
 
-```
+```yaml
 color: is("red")
 ```
 
@@ -86,7 +87,7 @@ color: is("red")
 
 Tests whether a value does not match.
 
-```
+```yaml
 is_passed: not("fail")
 ```
 
@@ -96,7 +97,7 @@ is_passed: not("fail")
 
 Tests whether a value matches any of passed arguments.
 
-```
+```yaml
 color: any("red", "blue", "green")
 ```
 
@@ -106,7 +107,7 @@ color: any("red", "blue", "green")
 
 Tests whether a value falls between `lower` and `upper` inclusive.
 
-```
+```yaml
 rating: range(0,10)
 ```
 
@@ -138,7 +139,7 @@ Tests whether a value is all lowercase.
 
 Tests for string length in a given column.
 
-```
+```yaml
 # Test for exact length match
 column: length(10)
 
@@ -194,7 +195,7 @@ See [araddon/dateparse](https://github.com/araddon/dateparse/blob/master/example
 
 __Important!__ You need to escape date values containing dashes using brackets (`[]`) or a double backslash (`\\`). For example `2020-02-10` is escaped like this:
 
-```
+```yaml
 collection_date: is_date_format("[2020-02-10]")
 collection_date: is_date_format("2020\\-02\\-10")
 ```
@@ -209,7 +210,7 @@ Checks whether a file exists
 
 Checks whether a file is a minimum size
 
-```
+```yaml
 photo: file_min_size("1MB")
 ```
 
@@ -219,7 +220,7 @@ photo: file_min_size("1MB")
 
 Validates the mimetype for a given file. See [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype/blob/master/supported_mimes.md) for available mimetypes.
 
-```
+```yaml
 photo: mimetype("image/jpeg")
 ```
 
