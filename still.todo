@@ -103,7 +103,7 @@ min_($)
 * [ ] NotEmptyExpr	::=	"notEmpty"	
 * [ ] UniqueExpr	::=	"unique" ("(" ColumnRef ("," ColumnRef)* ")")?	
 * [ ] UriExpr	::=	"uri"	
-* [ ] isURL?
+* [x] isURL ---> is_url
 * [x] XsdDateTimeExpr	::=	"xDateTime" ("(" XsdDateTimeLiteral "," XsdDateTimeLiteral ")")?	
 * [x] XsdDateTimeWithTimeZoneExpr	::=	"xDateTimeTz" ("(" XsdDateTimeWithTimeZoneLiteral "," XsdDateTimeWithTimeZoneLiteral ")")?	
 * [x] XsdDateExpr	::=	"xDate" ("(" XsdDateLiteral "," XsdDateLiteral ")")?	
@@ -118,17 +118,17 @@ min_($)
 * [x] LowerCaseExpr	::=	"lowerCase"	
 * [x] IdenticalExpr	::=	"positiveInteger"	
 * [ ] ExternalSingleExpr	::=	ExplicitContextExpr? (FileExistsExpr | IntegrityCheckExpr | ChecksumExpr | FileCountExpr)	
-* [ ] FileExistsExpr	::=	"fileExists" ("(" StringProvider ")")?	
+* [ x FileExistsExpr	::=	"fileExists" ("(" StringProvider ")")?	
 * [ ] IntegrityCheckExpr	::=	"integrityCheck" "(" (StringProvider ",")? (StringProvider ",")? ("\"includeFolder\"" | "\"excludeFolder\"") ")"	
 * [ ] ChecksumExpr	::=	"checksum(" FileExpr "," StringLiteral ")"	
-* [ ] FileExpr	::=	"file(" (StringProvider ",")? StringProvider ")"	
+* [x] FileExpr	::=	"file(" (StringProvider ",")? StringProvider ")"	
 * [ ] FileCountExpr	::=	"fileCount(" FileExpr ")"	
 * [ ] StringProvider	::=	ColumnRef | StringLiteral | ConcatExpr | NoExtExpr	
 * [ ] ConcatExpr	::=	"concat(" StringProvider ("," StringProvider)+ ")"	
 * [ ] NoExtExpr	::=	"noExt(" StringProvider ")"	
-* [ ] ParenthesizedExpr	::=	"(" ColumnValidationExpr+ ")"	
+* [x] ParenthesizedExpr	::=	"(" ColumnValidationExpr+ ")"	
 * [ ] ConditionalExpr	::=	IfExpr | SwitchExpr	
-* [ ] IfExpr	::=	"if(" (CombinatorialExpr | NonConditionalExpr) "," ColumnValidationExpr+ ("," ColumnValidationExpr+)? ")"	
+* [x] IfExpr	::=	"if(" (CombinatorialExpr | NonConditionalExpr) "," ColumnValidationExpr+ ("," ColumnValidationExpr+)? ")"	
 * [ ] SwitchExpr	::=	"switch(" SwitchCaseExpr+ ("," ColumnValidationExpr+)? ")"	
 * [ ] SwitchCaseExpr	::=	"if(" (CombinatorialExpr | NonConditionalExpr) "," ColumnValidationExpr+ ")"
 

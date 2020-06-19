@@ -41,6 +41,7 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"ends":      ends,
 	"contains":  contains,
 	"length":    length,
+	"is_url":    isURL,
 	// Numbers
 	"range":       rangeFunc,
 	"is_positive": isPositive,
@@ -55,6 +56,11 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"is_date":         isDate,
 	"is_date_relaxed": isDateRelaxed,
 	"is_date_format":  isDateFormat,
+	// Files
+	"file_exists":   fileExists,
+	"file_min_size": fileMinSize,
+	"file_max_size": fileMaxSize,
+	"mimetype":      mimeTypeIs,
 }
 
 func combineFunctionSets(ms ...map[string]govaluate.ExpressionFunction) map[string]govaluate.ExpressionFunction {

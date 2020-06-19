@@ -38,7 +38,7 @@ The `if_else` function evaluates an expression and returns `expr_if_true` or `ex
 column: if_else(column == "AB1", height > 50, height < 50)
 ```
 
-#####  `max(...)`
+##### `max(...)`
 
 Returns the max of arguments passed; Operates at the __row__ level.
 
@@ -48,7 +48,7 @@ items: max(col1, col2, col3)    # Returns the max value for the given row of col
 inventory: max(col1)            # This does not return the max for an entire column; col1 is a scaler value.
 ```
 
-__`min(...)`__
+##### `min(...)`
 
 Returns the minimum of arguments passed; Operates at the __row__ level.
 
@@ -74,7 +74,7 @@ status: contains(status, "# NOTE") && contains(time, "# NOTE")
 
 ### Basic
 
-__`is(value)`__
+##### `is(value)`
 
 Tests whether a value matches.
 
@@ -82,7 +82,7 @@ Tests whether a value matches.
 color: is("red")
 ```
 
-__`not(value)`__
+##### `not(value)`
 
 Tests whether a value does not match.
 
@@ -92,7 +92,7 @@ is_passed: not("fail")
 
 ### Sets
 
-__`any(...)`__
+##### `any(...)`
 
 Tests whether a value matches any of passed arguments.
 
@@ -102,7 +102,7 @@ color: any("red", "blue", "green")
 
 ### Numbers
 
-__`range(lower, upper)`__
+##### `range(lower, upper)`
 
 Tests whether a value falls between `lower` and `upper` inclusive.
 
@@ -110,31 +110,31 @@ Tests whether a value falls between `lower` and `upper` inclusive.
 rating: range(0,10)
 ```
 
-__`is_positive()`__
-__`is_negative()`__
+##### `is_positive()`
+##### `is_negative()`
 
 Tests whether a value is positive or negative.
 
 
 ### Strings
 
-__`contains(substr)`__
+##### `contains(substr)`
 
 Tests for the presence of a substring in a value.
 
-__`regex(expression)`__
+##### `regex(expression)`
 
 Tests whether a value matches a regular expression.
 
-__`uppercase()`__
+##### `uppercase()`
 
 Tests whether a value is all uppercase.
 
-__`lowercase()`__
+##### `lowercase()`
 
 Tests whether a value is all lowercase.
 
-__`length(low, high = None)`__
+##### `length(low, high = None)`
 
 Tests for string length in a given column.
 
@@ -149,28 +149,32 @@ column: length(10, "*")
 column: length(10, 20)
 ```
 
+##### `is_url()`
+
+Tests whether a string is a valid URL
+
 #### Types
 
-__`is_numeric()`__
-__`is_int()`__
+##### `is_numeric()`
+##### `is_int()`
 
 Test for numeric or integer values.
 
-__`is_bool()`__
+##### `is_bool()`__
 
 Tests that column contains `true`, `TRUE`, `false`, or `FALSE`
 
 #### Dates
 
-__`is_date()`__
+##### `is_date()`__
 
 Checks whether a value is date-like using strict criteria. `is_date()` will fail on ambiguous date strings. For example, `02/03/2020` is interpretted differently in Europe vs. the US but `2020-02-03` is not.
 
-__`is_date_relaxed()`__
+##### `is_date_relaxed()`__
 
 Checks whether a value is date-like with potential ambiguity. `02/03/2020` would pass.
 
-__`is_date_format(format)`__
+##### `is_date_format(format)`__
 
 Check whether a column matches a specified date format. Formats can be specified as any date like this:
 
@@ -193,6 +197,30 @@ __Important!__ You need to escape date values containing dashes using brackets (
 ```
 collection_date: is_date_format("[2020-02-10]")
 collection_date: is_date_format("2020\\-02\\-10")
+```
+
+#### Files
+
+##### `file_exists()`
+
+Checks whether a file exists
+
+##### `file_min_size(fsize)`
+
+Checks whether a file is a minimum size
+
+```
+photo: file_min_size("1MB")
+```
+
+`fsize` is a size string such as `100 mb`, `1G`, or `500`.
+
+##### `mimetype(type)`
+
+Validates the mimetype for a given file. See [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype/blob/master/supported_mimes.md) for available mimetypes.
+
+```
+photo: mimetype("image/jpeg")
 ```
 
 ## Notes
