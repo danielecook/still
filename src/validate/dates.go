@@ -24,13 +24,11 @@ func isDateRelaxed(args ...interface{}) (interface{}, error) {
 func isDateFormat(args ...interface{}) (interface{}, error) {
 	var format = strings.Replace(args[1].(string), "\\", "", -1)
 	format = strings.Trim(format, "[]")
-	fmt.Println(format)
 	layout, err := dateparse.ParseFormat(format)
 	if err != nil {
 		log.Fatal(fmt.Sprintf("Unable to parse '%s'", args[1]))
 	}
 	fmt.Printf("%v\n", layout)
 	_, err = time.Parse(layout, args[0].(string))
-	fmt.Println(err)
 	return (bool)(err == nil), nil
 }

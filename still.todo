@@ -103,6 +103,7 @@ min_($)
 * [ ] NotEmptyExpr	::=	"notEmpty"	
 * [ ] UniqueExpr	::=	"unique" ("(" ColumnRef ("," ColumnRef)* ")")?	
 * [ ] UriExpr	::=	"uri"	
+* [ ] isURL?
 * [x] XsdDateTimeExpr	::=	"xDateTime" ("(" XsdDateTimeLiteral "," XsdDateTimeLiteral ")")?	
 * [x] XsdDateTimeWithTimeZoneExpr	::=	"xDateTimeTz" ("(" XsdDateTimeWithTimeZoneLiteral "," XsdDateTimeWithTimeZoneLiteral ")")?	
 * [x] XsdDateExpr	::=	"xDate" ("(" XsdDateLiteral "," XsdDateLiteral ")")?	

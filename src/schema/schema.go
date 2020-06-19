@@ -105,7 +105,6 @@ func ParseSchema(schemaFile string) SchemaRules {
 				Schema.Separater = setSeparator(parseDirectiveValue(line))
 			case strings.HasPrefix(line, "@na_values"):
 				Schema.NA = parseDirectiveStrArray(line)
-				fmt.Println(Schema.NA)
 			case strings.HasPrefix(line, "@"):
 				log.Fatal(fmt.Sprintf("%s is an unknown directive", line))
 			default:

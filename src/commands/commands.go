@@ -40,7 +40,8 @@ func Run() {
 				schemaFname := c.Args().Get(0)
 				input := c.Args().Get(1)
 				useSchema := schema.ParseSchema(schemaFname)
-				validate.RunValidation(useSchema, input)
+				// Rev direction of params
+				validate.RunValidation(input, useSchema)
 				return nil
 			},
 		},

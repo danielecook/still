@@ -15,7 +15,6 @@ func not(args ...interface{}) (interface{}, error) {
 }
 
 func ifElse(args ...interface{}) (interface{}, error) {
-
 	// Assert that both results are the same type
 	if reflect.TypeOf(args[1]) != reflect.TypeOf(args[2]) {
 		errMsg := fmt.Sprintf("if_else  must return the same type for TRUE and FALSE; Returning %T != %T", args[1], args[2])
@@ -24,7 +23,6 @@ func ifElse(args ...interface{}) (interface{}, error) {
 
 	if args[0].(bool) {
 		return (interface{})(args[1].(interface{})), nil
-	} else {
-		return (interface{})(args[2].(interface{})), nil
 	}
+	return (interface{})(args[2].(interface{})), nil
 }

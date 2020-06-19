@@ -5,6 +5,8 @@ import (
 	"log"
 	"regexp"
 	"strings"
+
+	"github.com/asaskevich/govalidator"
 )
 
 func regex(args ...interface{}) (interface{}, error) {
@@ -46,7 +48,6 @@ func length(args ...interface{}) (interface{}, error) {
 	s := len(fmt.Sprintf("%s", args[0]))
 	minLen := int(args[1].(float64))
 	var withinLen bool
-	fmt.Println(s)
 	if len(args) == 2 {
 		withinLen = minLen == s
 	} else if len(args) == 3 {
@@ -64,4 +65,8 @@ func length(args ...interface{}) (interface{}, error) {
 		log.Fatal("Length only takes 2 arguments")
 	}
 	return (bool)(withinLen), nil
+}
+
+func isURL(args ...interface{}) (interface{}, error) {
+	return (bool)(govalidator.IsURL(args[1].(string))), nil
 }

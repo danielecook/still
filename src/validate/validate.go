@@ -1,17 +1,17 @@
 package validate
 
 import (
-	"encoding/csv"
 	"fmt"
 	"io"
 	"log"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/Knetic/govaluate"
+	"github.com/danielecook/still/src/reader"
 	"github.com/danielecook/still/src/schema"
+	"github.com/danielecook/still/src/utils"
 )
 
 func isNil(val interface{}) bool {
@@ -121,36 +121,23 @@ func typeConvert(val string, NA_vals []string) interface{} {
 }
 
 // TODO: Replace fname with iterator from excel, csv, etc.
-func RunValidation(schema schema.SchemaRules, data string) bool {
+func RunValidation(input string, schema schema.SchemaRules) bool {
 
-	file, err := os.Open(data)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer file.Close()
+	f, err := reader.NewReader(input, schema)
+	utils.Check(err)
 
-	// Test directives
-	r := csv.NewReader(file)
-	r.Comma = schema.Separater
+	colnames, err := f.ReadHeader()
+	utils.Check(err)
 
-	var i = 0
-	var colnames = []string{}
 	stopRead := false
 	for ok := true; ok; ok = (stopRead == false) {
-		record, readErr := r.Read()
+		record, readErr := f.Read()
 		if readErr == io.EOF {
 			stopRead = true
 			break
 		}
 		if err != nil {
 			log.Fatal(err)
-		}
-
-		i = i + 1
-		if i == 1 {
-			colnames = record
-			continue
-			// TODO: Validate column order here
 		}
 
 		// Set parameters

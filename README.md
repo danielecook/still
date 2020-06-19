@@ -30,7 +30,7 @@ still validate cars.schema cars.tsv
 
 Utility functions operate at the row level.
 
-__`if_else(condition, expr_if_true, expr_if_false)`__
+##### `if_else(condition, expr_if_true, expr_if_false)`
 
 The `if_else` function evaluates an expression and returns `expr_if_true` or `expr_if_false` depending on the evaluation of `condition`.
 
@@ -38,7 +38,7 @@ The `if_else` function evaluates an expression and returns `expr_if_true` or `ex
 column: if_else(column == "AB1", height > 50, height < 50)
 ```
 
-__`max(...)`__
+#####  `max(...)`
 
 Returns the max of arguments passed; Operates at the __row__ level.
 
