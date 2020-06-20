@@ -189,6 +189,8 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			utils.Check(err)
 			rule = uniqFunc.ReplaceAllString(rule, fmt.Sprintf("unique(\"%s:$1\",$1", col.Name))
 
+			fmt.Println(rule)
+
 			// TODO : Parse these just once!
 			functions := combineFunctionSets(testFunctions, utilFunctions)
 			expression, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)

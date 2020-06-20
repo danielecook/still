@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	csvReader "github.com/danielecook/still/src/reader/csv"
+	excelReader "github.com/danielecook/still/src/reader/excel"
 	"github.com/danielecook/still/src/schema"
 	"github.com/danielecook/still/src/ui"
 	"github.com/danielecook/still/src/utils"
@@ -18,14 +19,29 @@ type FileReader interface {
 	ReadHeader() (fieldNames []string, err error)
 }
 
-var delims = map[string]rune{
+var plainCsv = map[string]rune{
 	"text/tab-separated-values": '\t',
 	"text/csv":                  ',',
 }
 
+var spreadSheets = []string{
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+}
+
 func isPlain(s string) bool {
-	if _, ok := delims[s]; ok {
+	if _, ok := plainCsv[s]; ok {
 		return true
+	}
+	return false
+}
+
+func isSpreadsheet(s string) bool {
+	for _, i := range spreadSheets {
+		fmt.Println(i)
+		fmt.Println(s)
+		if i == s {
+			return true
+		}
 	}
 	return false
 }
@@ -33,7 +49,7 @@ func isPlain(s string) bool {
 func inferDelim(s string) (rune, bool) {
 
 	if isPlain(s) {
-		return delims[s], true
+		return plainCsv[s], true
 	}
 	return ' ', false
 }
@@ -60,10 +76,12 @@ func NewReader(fname string, schema schema.SchemaRules) (FileReader, error) {
 			schema.Separater = delim
 		}
 	}
-
+	fmt.Println(mime.String())
 	switch {
 	case isPlain(mime.String()):
-		return csvReader.New(fname, schema), nil
+		return csvReader.NewCSV(fname, schema), nil
+	case isSpreadsheet(mime.String()):
+		return excelReader.NewExcel(fname, schema), nil
 	}
 	return nil, fmt.Errorf("file type %s is not defined", fname)
 }

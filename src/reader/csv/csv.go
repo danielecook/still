@@ -12,7 +12,7 @@ type CsvFileReader struct {
 	csvReader *csv.Reader
 }
 
-func New(fname string, sch schema.SchemaRules) *CsvFileReader {
+func NewCSV(fname string, sch schema.SchemaRules) *CsvFileReader {
 	file, err := os.Open(fname)
 	if err != nil {
 		log.Fatal(err)
