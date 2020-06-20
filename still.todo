@@ -11,18 +11,24 @@
 * [ ] Figure out how to handle NA columns @ignoreNA ?
 * [ ] Optional directive
 
+# directives
+
+* [ ] @explicit
+* [ ] @ordered
+
 # @vectorops
 --> Enable vector operations and functions?
 --> Loads entire dataset and passes vectors
-max_($) OR max_ indicates vector...
-min_($)
+
+* [ ] cum_mean
+* [ ] last
 
 # @bloom_uniq
 
 # input
 
-* [ ] excel
-* [ ] gzipped files
+* [x] excel
+* [x] gzipped files
 
 # output
 
@@ -102,7 +108,7 @@ min_($)
 * [ ] EmptyExpr	::=	"empty"	
 * [ ] NotEmptyExpr	::=	"notEmpty"	
 * [x] UniqueExpr	::=	"unique" ("(" ColumnRef ("," ColumnRef)* ")")?	
-* [ ] UriExpr	::=	"uri"	
+* [-] UriExpr	::=	"uri"	
 * [x] isURL ---> is_url
 * [x] XsdDateTimeExpr	::=	"xDateTime" ("(" XsdDateTimeLiteral "," XsdDateTimeLiteral ")")?	
 * [x] XsdDateTimeWithTimeZoneExpr	::=	"xDateTimeTz" ("(" XsdDateTimeWithTimeZoneLiteral "," XsdDateTimeWithTimeZoneLiteral ")")?	
@@ -112,8 +118,8 @@ min_($)
 * [x] DateExpr	::=	"date(" StringProvider "," StringProvider "," StringProvider ("," XsdDateLiteral "," XsdDateLiteral)? ")"	
 * [x] PartialUkDateExpr	::=	"partUkDate"	
 * [x] PartialDateExpr	::=	"partDate(" StringProvider "," StringProvider "," StringProvider ")"	
-* [ ] Uuid4Expr	::=	"uuid4"	
-* [ ] PositiveIntegerExpr -------> RENAMED is_positive
+* [-] Uuid4Expr	::=	"uuid4"	
+* [x] PositiveIntegerExpr -------> RENAMED is_positive
 * [x] UpperCaseExpr	::=	"upperCase"	
 * [x] LowerCaseExpr	::=	"lowerCase"	
 * [x] IdenticalExpr	::=	"positiveInteger"	

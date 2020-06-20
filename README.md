@@ -51,8 +51,7 @@ inventory: max(col1)            # This does not return the max for an entire col
 
 Returns the minimum of arguments passed; Operates at the __row__ level.
 
-##### `to_lower(val)`
-##### `to_uppper(val)`
+##### `to_lower(val)` and `to_uppper(val)`
 
 Converts a string to lower or upper case
 
@@ -137,11 +136,9 @@ Tests whether a value falls between `lower` and `upper` inclusive.
 rating: range(0,10)
 ```
 
-##### `is_positive()`
-##### `is_negative()`
+##### `is_positive()` and `is_negative()`
 
 Tests whether a value is positive or negative.
-
 
 ### Strings
 
@@ -191,21 +188,21 @@ Tests whether a string is a valid URL
 
 Test for numeric or integer values.
 
-##### `is_bool()`__
+##### `is_bool()`
 
 Tests that column contains `true`, `TRUE`, `false`, or `FALSE`
 
 #### Dates
 
-##### `is_date()`__
+##### `is_date()`
 
 Checks whether a value is date-like using strict criteria. `is_date()` will fail on ambiguous date strings. For example, `02/03/2020` is interpretted differently in Europe vs. the US but `2020-02-03` is not.
 
-##### `is_date_relaxed()`__
+##### `is_date_relaxed()`
 
 Checks whether a value is date-like with potential ambiguity. `02/03/2020` would pass.
 
-##### `is_date_format(format)`__
+##### `is_date_format(format)`
 
 Check whether a column matches a specified date format. Formats can be specified as any date like this:
 

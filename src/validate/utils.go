@@ -49,11 +49,11 @@ func countFunc(args ...interface{}) (interface{}, error) {
 
 // strings
 func toLower(args ...interface{}) (interface{}, error) {
-	return (string)(strings.ToLower(args[0])), nil
+	return (string)(strings.ToLower(args[0].(string))), nil
 }
 
 func toUpper(args ...interface{}) (interface{}, error) {
-	return (string)(strings.ToUpper(args[0])), nil
+	return (string)(strings.ToUpper(args[0].(string))), nil
 }
 
 // Dates
@@ -64,9 +64,16 @@ func parseDate(args ...interface{}) (interface{}, error) {
 }
 
 func replace(args ...interface{}) (interface{}, error) {
-	val = strings.Replace(args[0].(string), args[1].(string), args[2].(string))
+	val := strings.Replace(args[0].(string), args[1].(string), args[2].(string), -1)
 	return (string)(val), nil
 }
+
+// var lastMap = map[string]map[string]int{}
+// func last(args ...interface{}) (interface{}, error) {
+// 	// Checks for an element present in a set.
+
+// 	return (bool)(err == nil), nil
+// }
 
 // replace
 

@@ -37,8 +37,6 @@ func isPlain(s string) bool {
 
 func isSpreadsheet(s string) bool {
 	for _, i := range spreadSheets {
-		fmt.Println(i)
-		fmt.Println(s)
 		if i == s {
 			return true
 		}
