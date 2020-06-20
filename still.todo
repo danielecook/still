@@ -101,7 +101,7 @@ min_($)
 * [ ] PositiveIntegerOrAny	::=	PositiveIntegerLiteral | WildcardLiteral	
 * [ ] EmptyExpr	::=	"empty"	
 * [ ] NotEmptyExpr	::=	"notEmpty"	
-* [ ] UniqueExpr	::=	"unique" ("(" ColumnRef ("," ColumnRef)* ")")?	
+* [x] UniqueExpr	::=	"unique" ("(" ColumnRef ("," ColumnRef)* ")")?	
 * [ ] UriExpr	::=	"uri"	
 * [x] isURL ---> is_url
 * [x] XsdDateTimeExpr	::=	"xDateTime" ("(" XsdDateTimeLiteral "," XsdDateTimeLiteral ")")?	

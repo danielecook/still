@@ -24,6 +24,7 @@ var utilFunctions = map[string]govaluate.ExpressionFunction{
 	"max":     maxFunc,
 	"min":     minFunc,
 	"if_else": ifElse,
+	"count":   countFunc,
 }
 
 // Define functions
@@ -32,7 +33,8 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"is":  is,
 	"not": not,
 	// Sets
-	"any": any,
+	"any":    any,
+	"unique": uniqueFunc,
 	// Strings
 	"regex":     regex,
 	"uppercase": uppercase,
@@ -160,7 +162,6 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 		for _, col := range schema.Columns {
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
-			fmt.Println(currentVar)
 			// TODO: Allow evaluation of NA values conditionally?
 			if isNil(currentVar) {
 				continue
@@ -170,16 +171,24 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			var funcSet = strings.Join(functionKeys(testFunctions), "|")
 			//var colSet = strings.Join(colnames, "|")
 			var rule string
-			// TODO: Need to test for explict column references and leave those intact;
-			// if implicit, then replace; funcMatch.ReplaceAllStringFunc? Or
-			// a more complex solution
+			// Allow for explcit references; They are removed (and added back later).
+			explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[,]?", funcSet, col.Name))
+			rule = explicitReplace.ReplaceAllString(col.Rule, "$1(")
+
+			// Now add implicit argument back
 			funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
-			if err != nil {
-				log.Fatal(err)
-			}
-			rule = funcMatch.ReplaceAllString(col.Rule, "$1(current_var_,")
+			utils.Check(err)
+
+			rule = funcMatch.ReplaceAllString(rule, "$1(current_var_,")
+
 			// If function takes single value, remove trailing comma
 			rule = strings.Replace(rule, ",)", ")", -1)
+
+			// The unique function needs a key; Add as implicit column and arguments
+			uniqFunc, err := regexp.Compile("unique\\(([^)]+)")
+			utils.Check(err)
+			rule = uniqFunc.ReplaceAllString(rule, fmt.Sprintf("unique(\"%s:$1\",$1", col.Name))
+
 			// TODO : Parse these just once!
 			functions := combineFunctionSets(testFunctions, utilFunctions)
 			expression, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)

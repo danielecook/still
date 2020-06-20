@@ -25,8 +25,6 @@ still validate cars.schema cars.tsv
 
 # Test Expressions
 
-## Vector Functions
-
 ## Utility Functions
 
 Utility functions operate at the row level.
@@ -36,7 +34,7 @@ Utility functions operate at the row level.
 The `if_else` function evaluates an expression and returns `expr_if_true` or `expr_if_false` depending on the evaluation of `condition`.
 
 ```yaml
-column: if_else(column == "AB1", height > 50, height < 50)
+flavor: if_else(flavor == "Chocolate", sugar > 50, sugar < 50)
 ```
 
 ##### `max(...)`
@@ -48,7 +46,7 @@ orders: max(1,2,3) == 3         # Returns 3 == 3; true
 items: max(col1, col2, col3)    # Returns the max value for the given row of col1-3.
 inventory: max(col1)            # This does not return the max for an entire column; col1 is a scaler value.
 ```
-
+ 
 ##### `min(...)`
 
 Returns the minimum of arguments passed; Operates at the __row__ level.
@@ -57,7 +55,7 @@ Returns the minimum of arguments passed; Operates at the __row__ level.
 
 ### Background
 
-Test functions all return a boolean (true/false) and allow you to evaluate conditions on a column. For brevity, they are implicitely passed the specified column when none is specified. For example:
+Test functions all return a boolean (true/false) and allow you to evaluate conditions on a column. For brevity, *all* test functions are implicitely passed the column being evaluated as the first argument. For example:
 
 ```
 status: contains("# NOTE")
@@ -100,6 +98,29 @@ Tests whether a value matches any of passed arguments.
 ```yaml
 color: any("red", "blue", "green")
 ```
+
+##### `unique(...)`
+
+Tests whether a column is unique.
+
+```yaml
+items: unique()
+# You can also test that a set of columns are unique.
+color: unique(color, size, weight)
+```
+
+*note* - `unique` will not work well on large datasets. It stores a hash digest of the arguments to test for uniqueness.
+
+##### `count(...)`
+
+Returns the number of times the passed values have been observed.
+
+```yaml
+color: count(color) <= 20 # Fails if a value is observed more than 20x times.
+configuration: count(color, size) <= 10 # Fails if the combination of values is observed more than 10 times.
+```
+
+*note* - `unique` will not work well on large datasets. It stores a hash digest of the arguments to test for uniqueness.
 
 ### Numbers
 
