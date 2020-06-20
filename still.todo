@@ -132,6 +132,18 @@ min_($)
 * [ ] SwitchExpr	::=	"switch(" SwitchCaseExpr+ ("," ColumnValidationExpr+)? ")"	
 * [ ] SwitchCaseExpr	::=	"if(" (CombinatorialExpr | NonConditionalExpr) "," ColumnValidationExpr+ ")"
 
+-----
+To Add:
+* [ ] Exif
+* [ ] Yaml data
+* [ ] @data source
+* [ ] coalesce
+* [ ] index_of
+* [ ] commenting functionality
+* [ ] uuid
+* [ ] md5-hash for files
+* [ ] Version statement
+
 # Schema
 
-* [ ] Infer delimiter
+* [x] Infer delimiter

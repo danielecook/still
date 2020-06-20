@@ -1,7 +1,13 @@
 package validate
 
 import (
+	"fmt"
 	"math"
+	"strings"
+	"time"
+
+	"github.com/araddon/dateparse"
+	"github.com/danielecook/still/src/utils"
 )
 
 func strLen(args ...interface{}) (interface{}, error) {
@@ -40,3 +46,28 @@ func countFunc(args ...interface{}) (interface{}, error) {
 	uniqueMap[uniqueGroup][digest]++
 	return (float64)(uniqueMap[uniqueGroup][digest]), nil
 }
+
+// strings
+func toLower(args ...interface{}) (interface{}, error) {
+	return (string)(strings.ToLower(args[0])), nil
+}
+
+func toUpper(args ...interface{}) (interface{}, error) {
+	return (string)(strings.ToUpper(args[0])), nil
+}
+
+// Dates
+func parseDate(args ...interface{}) (interface{}, error) {
+	val, err := dateparse.ParseAny(fmt.Sprintf("%s", args[0]))
+	utils.Check(err)
+	return (time.Time)(val), nil
+}
+
+func replace(args ...interface{}) (interface{}, error) {
+	val = strings.Replace(args[0].(string), args[1].(string), args[2].(string))
+	return (string)(val), nil
+}
+
+// replace
+
+// coalesce

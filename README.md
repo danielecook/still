@@ -51,13 +51,18 @@ inventory: max(col1)            # This does not return the max for an entire col
 
 Returns the minimum of arguments passed; Operates at the __row__ level.
 
+##### `to_lower(val)`
+##### `to_uppper(val)`
+
+Converts a string to lower or upper case
+
 ## Test Functions
 
 ### Background
 
 Test functions all return a boolean (true/false) and allow you to evaluate conditions on a column. For brevity, *all* test functions are implicitely passed the column being evaluated as the first argument. For example:
 
-```
+```yaml
 status: contains("# NOTE")
 # Converted to:
 status: contains(status, "# NOTE")
@@ -65,7 +70,7 @@ status: contains(status, "# NOTE")
 
 You can still be explicit when referencing the column of interest, and you can also combine test functions using different columns:
 
-```
+```yaml
 status: contains("# NOTE") && contains(color, "red")
 # Converted to:
 status: contains(status, "# NOTE") && contains(time, "# NOTE")
@@ -155,6 +160,10 @@ Tests whether a value is all uppercase.
 ##### `lowercase()`
 
 Tests whether a value is all lowercase.
+
+##### `replace(string, find, replace)`
+
+Replace `find` with `replace` in `string`.
 
 ##### `length(low, high = None)`
 

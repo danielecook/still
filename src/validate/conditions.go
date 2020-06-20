@@ -26,3 +26,5 @@ func ifElse(args ...interface{}) (interface{}, error) {
 	}
 	return (interface{})(args[2].(interface{})), nil
 }
+
+// is NA, etc.???

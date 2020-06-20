@@ -57,8 +57,6 @@ func mimeTypeIs(args ...interface{}) (interface{}, error) {
 
 // sha256 checksum
 
-// is Image File
-
-// is Mime type
+// is mimetype --> image
 
 // Directory exists

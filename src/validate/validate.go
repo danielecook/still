@@ -25,6 +25,10 @@ var utilFunctions = map[string]govaluate.ExpressionFunction{
 	"min":     minFunc,
 	"if_else": ifElse,
 	"count":   countFunc,
+	// strings
+	"to_upper": toUpper,
+	"to_lower": toLower,
+	"replace":  replace,
 }
 
 // Define functions

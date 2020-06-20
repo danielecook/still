@@ -36,3 +36,5 @@ func uniqueFunc(args ...interface{}) (interface{}, error) {
 	uniqueMap[uniqueGroup][digest]++
 	return (bool)(false), nil
 }
+
+// is_subsetted_list()
