@@ -11,6 +11,5 @@ require (
 	github.com/gabriel-vasile/mimetype v1.1.0
 	github.com/logrusorgru/aurora v0.0.0-20200102142835-e9ef32dff381
 	github.com/stretchr/testify v1.6.1 // indirect
-	github.com/tealeg/xlsx v1.0.5
 	github.com/urfave/cli/v2 v2.2.0
 )

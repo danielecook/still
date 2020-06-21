@@ -39,8 +39,9 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"is":  is,
 	"not": not,
 	// Sets
-	"any":    any,
-	"unique": uniqueFunc,
+	"any":            any,
+	"unique":         uniqueFunc,
+	"is_subset_list": isSubsetList,
 	// Strings
 	"regex":     regex,
 	"uppercase": uppercase,
@@ -55,7 +56,6 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"is_positive": isPositive,
 	"is_negative": isNegative,
 	// Types
-	// TODO: ADD is_float()?
 	// Add is_string()
 	"is_numeric": isNumeric,
 	"is_int":     isInt,

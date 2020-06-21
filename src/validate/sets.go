@@ -3,6 +3,7 @@ package validate
 import (
 	"crypto/sha1"
 	"fmt"
+	"strings"
 )
 
 func any(args ...interface{}) (interface{}, error) {
@@ -15,6 +16,9 @@ func any(args ...interface{}) (interface{}, error) {
 	return (bool)(false), nil
 }
 
+/*
+	unique
+*/
 var uniqueMap = map[string]map[string]int{}
 
 func digestArgs(args ...interface{}) string {
@@ -37,4 +41,22 @@ func uniqueFunc(args ...interface{}) (interface{}, error) {
 	return (bool)(false), nil
 }
 
-// is_subsetted_list()
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+func isSubsetList(args ...interface{}) (interface{}, error) {
+	testVals := strings.Split(args[0].(string), ",")
+	okVals := strings.Split(args[1].(string), args[2].(string))
+	for _, i := range testVals {
+		if stringInSlice(i, okVals) == false {
+			return (bool)(false), nil
+		}
+	}
+	return (bool)(true), nil
+}

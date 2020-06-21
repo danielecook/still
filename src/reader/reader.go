@@ -23,6 +23,7 @@ type FileReader interface {
 var plainCsv = map[string]rune{
 	"text/tab-separated-values": '\t',
 	"text/csv":                  ',',
+	"text/plain; charset=utf-8": '\t',
 }
 
 var spreadSheets = []string{
@@ -46,7 +47,6 @@ func isSpreadsheet(s string) bool {
 }
 
 func inferDelim(s string) (rune, bool) {
-
 	if isPlain(s) {
 		return plainCsv[s], true
 	}
@@ -81,5 +81,6 @@ func NewReader(fname string, schema schema.SchemaRules) (FileReader, error) {
 	case isSpreadsheet(mime.String()):
 		return excelReader.NewExcel(fname, schema), nil
 	}
+	fmt.Println(mime.String())
 	return nil, fmt.Errorf("file type %s is not defined", fname)
 }
