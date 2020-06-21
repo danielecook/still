@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/Knetic/govaluate"
+	"github.com/danielecook/still/src/output"
 	"github.com/danielecook/still/src/reader"
 	"github.com/danielecook/still/src/schema"
 	"github.com/danielecook/still/src/utils"
@@ -142,9 +143,10 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 	utils.Check(err)
 
 	// Set all columns as valid to start
-	validColumns := map[string]bool{}
-	for col := range colnames {
-		validColumns[col] = true
+	ColumnStatus := make([]output.ValidCol, len(colnames))
+	for k := range colnames {
+		ColumnStatus[k].Name = colnames[k]
+		ColumnStatus[k].IsValid = true
 	}
 
 	stopRead := false
@@ -169,7 +171,7 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 		parameters["false"] = false
 		// ??? ADD parameters["NA"] = nil???
 
-		for _, col := range schema.Columns {
+		for k, col := range schema.Columns {
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
 			// TODO: Allow evaluation of NA values conditionally?
@@ -179,7 +181,7 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			parameters["current_var_"] = currentVar
 
 			var funcSet = strings.Join(functionKeys(testFunctions), "|")
-			//var colSet = strings.Join(colnames, "|")
+
 			var rule string
 			// Allow for explcit references; They are removed (and added back later).
 			explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[,]?", funcSet, col.Name))
@@ -212,16 +214,19 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 
 			// Log results
 			if result == false {
-				validColumns[col.Name] = false
-				fmt.Printf("%s: %s --> %v\n\n", col.Name, rule, result)
+				ColumnStatus[k].IsValid = false
+				ColumnStatus[k].NErrs++
 			}
 		}
 
-		/*
-			Output results
-		*/
-
 	}
 
+	output.PrintSummary(ColumnStatus)
+
+	for _, i := range ColumnStatus {
+		if i.IsValid == false {
+			return false
+		}
+	}
 	return true
 }
