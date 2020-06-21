@@ -15,7 +15,7 @@ func Run() {
 
 	app := cli.NewApp()
 	app.Name = "Still"
-	app.Usage = "Lint / Validate CSV, TSV, Excel, and other tabular data"
+	app.Usage = "Validate CSV, TSV, and Excel data"
 
 	app.Authors = []*cli.Author{
 		{

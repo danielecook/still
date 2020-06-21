@@ -17,8 +17,8 @@
 * [ ] @ordered
 
 # @vectorops
---> Enable vector operations and functions?
---> Loads entire dataset and passes vectors
+-> Enable vector operations and functions?
+-> Loads entire dataset and passes vectors
 
 * [ ] cum_mean
 * [ ] last
@@ -83,33 +83,3 @@
 * [ ] PositiveIntegerOrAny	::=	PositiveIntegerLiteral | WildcardLiteral	
 * [ ] EmptyExpr	::=	"empty"	
 * [ ] NotEmptyExpr	::=	"notEmpty"	
-* [-] UriExpr	::=	"uri"	
-* [-] Uuid4Expr	::=	"uuid4"	
-* [ ] ExternalSingleExpr	::=	ExplicitContextExpr? (FileExistsExpr | IntegrityCheckExpr | ChecksumExpr | FileCountExpr)	
-* [x] FileExistsExpr	::=	"fileExists" ("(" StringProvider ")")?	
-* [ ] IntegrityCheckExpr	::=	"integrityCheck" "(" (StringProvider ",")? (StringProvider ",")? ("\"includeFolder\"" | "\"excludeFolder\"") ")"	
-* [ ] ChecksumExpr	::=	"checksum(" FileExpr "," StringLiteral ")"	
-* [ ] FileCountExpr	::=	"fileCount(" FileExpr ")"	
-* [ ] StringProvider	::=	ColumnRef | StringLiteral | ConcatExpr | NoExtExpr	
-* [ ] ConcatExpr	::=	"concat(" StringProvider ("," StringProvider)+ ")"	
-* [ ] NoExtExpr	::=	"noExt(" StringProvider ")"	
-* [ ] ConditionalExpr	::=	IfExpr | SwitchExpr	
-* [ ] SwitchExpr	::=	"switch(" SwitchCaseExpr+ ("," ColumnValidationExpr+)? ")"	
-* [ ] SwitchCaseExpr	::=	"if(" (CombinatorialExpr | NonConditionalExpr) "," ColumnValidationExpr+ ")"
-
------
-To Add:
-* [ ] Exif
-* [ ] Yaml data
-* [ ] @data source
-* [ ] coalesce
-* [ ] index_of
-* [ ] commenting functionality
-* [ ] uuid
-* [ ] md5-hash for files
-* [ ] Version statement
-* [ ] find_in_set
-
-# Schema
-
-* [x] Infer delimiter
