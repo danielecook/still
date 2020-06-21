@@ -15,6 +15,7 @@ import (
 // https://github.com/lucmichalski/bigdata-stacks/blob/8fe9412b94dd5e0d20b14f29333037f6fc003757/refs/gleam/plugins/file/file_reader.go
 
 type FileReader interface {
+	Row() int
 	Read() (row []string, err error)
 	ReadHeader() (fieldNames []string, err error)
 }

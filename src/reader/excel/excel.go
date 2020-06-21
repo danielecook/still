@@ -37,3 +37,7 @@ func (r *excelReader) Read() (row []string, err error) {
 	r.currentRow++
 	return r.rows[r.currentRow], nil
 }
+
+func (r *excelReader) Row() int {
+	return r.currentRow
+}

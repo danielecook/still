@@ -13,6 +13,7 @@ import (
 	"github.com/danielecook/still/src/reader"
 	"github.com/danielecook/still/src/schema"
 	"github.com/danielecook/still/src/utils"
+	"github.com/logrusorgru/aurora"
 )
 
 func isNil(val interface{}) bool {
@@ -216,6 +217,16 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			if result == false {
 				ColumnStatus[k].IsValid = false
 				ColumnStatus[k].NErrs++
+
+				// Output log error
+				fmt.Println(
+					aurora.Sprintf("%s:%s[%d] %s -x-> '%s'",
+						aurora.Red("Error"),
+						aurora.Yellow(col.Name),
+						f.Row(),
+						aurora.Blue(col.Rule),
+						currentVar))
+
 			}
 		}
 
