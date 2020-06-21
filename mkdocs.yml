@@ -1,0 +1,24 @@
+site_name: still
+theme: readthedocs
+repo_url: https://github.com/danielecook/still
+
+markdown_extensions:
+    - admonition
+    - smarty
+    - toc:
+            permalink: true
+            separator: _
+    - fenced_code
+    - sane_lists
+
+nav:
+    - Still: index.md
+    - Getting Started: getting-started.md
+    - Schema: schema.md
+    - Functions:
+        Functions: functions.md
+        Expressions: expressions.md
+
+
+extra_css:
+    - styles.css

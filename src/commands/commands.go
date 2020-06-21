@@ -1,7 +1,6 @@
 package commands
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -41,8 +40,13 @@ func Run() {
 				schemaFname := c.Args().Get(0)
 				input := c.Args().Get(1)
 				useSchema := schema.ParseSchema(schemaFname)
-				validate.RunValidation(useSchema, input)
-				fmt.Printf("%#v", useSchema)
+				// Rev direction of params
+				result := validate.RunValidation(input, useSchema)
+				if result == false {
+					os.Exit(1)
+				} else {
+					os.Exit(0)
+				}
 				return nil
 			},
 		},
