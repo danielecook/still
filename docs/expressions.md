@@ -73,7 +73,7 @@ Tests whether a delimited list (nested data) is a subset of the specified delimi
 
 
 ```
-letters: is_subset_list("A,B,C", ",) # If letters='A,B' --> TRUE
+letters: is_subset_list("A,B,C", ",") # If letters='A,B' --> TRUE
 letters: is_subset_list("A,C", ",")   # If letters='A'B' --> FALSE
 ```
 

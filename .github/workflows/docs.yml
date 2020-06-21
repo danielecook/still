@@ -1,7 +1,6 @@
 name: docs
 on: ["push"]
 
-
 jobs:
   build:
     name: Deploy docs

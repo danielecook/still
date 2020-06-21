@@ -170,9 +170,8 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 		// Bools
 		parameters["true"] = true
 		parameters["false"] = false
-		// ??? ADD parameters["NA"] = nil???
 
-		for k, col := range schema.Columns {
+		for _, col := range schema.Columns {
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
 			// TODO: Allow evaluation of NA values conditionally?
@@ -215,12 +214,13 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 
 			// Log results
 			if result == false {
-				ColumnStatus[k].IsValid = false
-				ColumnStatus[k].NErrs++
+				colIndex := indexOf(col.Name, colnames)
+				ColumnStatus[colIndex].IsValid = false
+				ColumnStatus[colIndex].NErrs++
 
 				// Output log error
 				fmt.Println(
-					aurora.Sprintf("%s:%s[%d] %s -x-> '%s'",
+					aurora.Sprintf("%s:%s[%d] %s → '%s'",
 						aurora.Red("Error"),
 						aurora.Yellow(col.Name),
 						f.Row(),
@@ -234,6 +234,7 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 
 	output.PrintSummary(ColumnStatus)
 
+	// Fail if any single column fails
 	for _, i := range ColumnStatus {
 		if i.IsValid == false {
 			return false
