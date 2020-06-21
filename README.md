@@ -51,7 +51,7 @@ inventory: max(col1)            # This does not return the max for an entire col
 
 Returns the minimum of arguments passed; Operates at the __row__ level.
 
-##### `to_lower(val)` and `to_uppper(val)`
+##### `to_lower(value)` and `to_uppper(value)`
 
 Converts a string to lower or upper case
 

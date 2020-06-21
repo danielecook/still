@@ -74,7 +74,6 @@ func NewReader(fname string, schema schema.SchemaRules) (FileReader, error) {
 			schema.Separater = delim
 		}
 	}
-	fmt.Println(mime.String())
 	switch {
 	case isPlain(mime.String()):
 		return csvReader.NewCSV(fname, schema), nil

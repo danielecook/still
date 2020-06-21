@@ -108,7 +108,7 @@ func typeConvert(val string, NA_vals []string) interface{} {
 		}
 	}
 
-	// Is it a Bool?
+	// bool
 	if strings.ToUpper(val) == "TRUE" {
 		return true
 	}
@@ -116,13 +116,13 @@ func typeConvert(val string, NA_vals []string) interface{} {
 		return false
 	}
 
-	// Is it an Integer?
+	// integer
 	valInt, err := strconv.Atoi(val)
 	if err == nil {
 		return valInt
 	}
 
-	// Is it a float?
+	// float
 	valFloat, err := strconv.ParseFloat(val, 64)
 	if err == nil {
 		return valFloat
@@ -140,6 +140,12 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 
 	colnames, err := f.ReadHeader()
 	utils.Check(err)
+
+	// Set all columns as valid to start
+	validColumns := map[string]bool{}
+	for col := range colnames {
+		validColumns[col] = true
+	}
 
 	stopRead := false
 	for ok := true; ok; ok = (stopRead == false) {
@@ -193,8 +199,6 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			utils.Check(err)
 			rule = uniqFunc.ReplaceAllString(rule, fmt.Sprintf("unique(\"%s:$1\",$1", col.Name))
 
-			fmt.Println(rule)
-
 			// TODO : Parse these just once!
 			functions := combineFunctionSets(testFunctions, utilFunctions)
 			expression, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
@@ -205,8 +209,17 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			if err != nil {
 				log.Fatal(err)
 			}
-			fmt.Printf("%s: %s --> %v\n\n", col.Name, rule, result)
+
+			// Log results
+			if result == false {
+				validColumns[col.Name] = false
+				fmt.Printf("%s: %s --> %v\n\n", col.Name, rule, result)
+			}
 		}
+
+		/*
+			Output results
+		*/
 
 	}
 

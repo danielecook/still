@@ -70,3 +70,7 @@ func length(args ...interface{}) (interface{}, error) {
 func isURL(args ...interface{}) (interface{}, error) {
 	return (bool)(govalidator.IsURL(args[0].(string))), nil
 }
+
+// func is_subset_list(args ...interface{}) (interface{}, error) {
+
+// }
