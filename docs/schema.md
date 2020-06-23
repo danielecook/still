@@ -38,9 +38,36 @@ Column Rules consist of a column name and expressions to test for each column. F
 color: any("red", "blue", "green")
 ```
 
-## Data
+## Data Providers
 
-Adding a dashline (`---`) signals the beginning of the data section. Any content below the dashline is parsed as YAML and can be accessed in expressions using `yaml_data`.
+Certain rules are easier to specify if you need to compare a column against a larger set of data.
+
+### YAML Data
+
+Adding a dashline (`---`) signals the beginning of the data section of the schema. Any content below the dashline is parsed as YAML and can be accessed in expressions using its key. For example:
+
+```yaml
+color_values:
+  - red
+  - blue
+  - green
+
+flavor_values:
+  - chocolate
+  - vanilla
+  - strawberry
+```
+
+Column rules might be specified like this:
+
+```yaml
+color: any(color_values)
+flavor: any(flavor_values)
+```
+
+#### Functions supporting data providers
+
+* `any`
 
 ## Comments
 
