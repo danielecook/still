@@ -17,6 +17,9 @@ func isNegative(args ...interface{}) (interface{}, error) {
 }
 
 func rangeFunc(args ...interface{}) (interface{}, error) {
+	if isNA(args[0]) {
+		return (bool)(true), nil
+	}
 	var between bool
 	switch val := args[0].(type) {
 	case nil:

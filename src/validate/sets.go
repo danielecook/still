@@ -7,6 +7,9 @@ import (
 )
 
 func any(args ...interface{}) (interface{}, error) {
+	if isNA(args[0]) {
+		return (bool)(true), nil
+	}
 	// Checks for an element present in a set.
 	for _, val := range args[1:] {
 		subVal, ok := val.([]interface{})
