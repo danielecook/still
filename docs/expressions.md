@@ -18,6 +18,27 @@ status: contains("# NOTE") && contains(color, "red")
 status: contains(status, "# NOTE") && contains(time, "# NOTE")
 ```
 
+### Operators
+
+`still` uses [Knetic/govaluate](https://github.com/Knetic/govaluate) to evaluate expressions. See [the manual](https://github.com/Knetic/govaluate/blob/master/MANUAL.md) for more detail on operators. The following operators are supported.
+
+* Modifiers: `+` `-` `/` `*` `&` `|` `^` `**` `%` `>>` `<<`
+* Comparators: `>` `>=` `<` `<=` `==` `!=` `=~` `!~`
+* Logical ops: `||` `&&`
+* Numeric constants, as 64-bit floating point (`12345.678`)
+* String constants (single quotes: `'foobar'`)
+* Date constants (__single quotes__, using any RFC3339, ISO8601, ruby date, or unix date; date parsing is automatically tried with any string constant)
+* Boolean constants: `true` `false`
+* Parenthesis to control order of evaluation `(` `)`
+* Arrays (anything separated by `,` within parenthesis: `(1, 2, 'foo')`)
+* Prefixes: `!` `-` `~`
+* Ternary conditional: `?` `:`
+* Null coalescence: `??`
+
+#### Dates
+
+Single quoted dates are parsed...
+
 ### Basic
 
 ##### `is`
@@ -44,6 +65,12 @@ Tests whether a value matches any of passed arguments.
 
 ```yaml
 color: any("red", "blue", "green")
+```
+
+You can also use an array with the `IN` operator, but you must specify the column name:
+
+```yaml
+color: color IN ("red", "blue", "green")
 ```
 
 ##### `unique`
@@ -111,11 +138,17 @@ Tests for the presence of a substring in a value.
 
 ##### `regex`
 
-```
+```js
 regex(expression)
 ```
 
 Tests whether a value matches a regular expression.
+
+You can also use `=~` or `!~` regex comparators.
+
+```js
+(colname =~ "L[0-9]+")
+```
 
 ##### `uppercase`
 

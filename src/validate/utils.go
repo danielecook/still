@@ -10,6 +10,10 @@ import (
 	"github.com/danielecook/still/src/utils"
 )
 
+func print(args ...interface{}) (interface{}, error) {
+	return (bool)(true), nil
+}
+
 func strLen(args ...interface{}) (interface{}, error) {
 	length := len(args[0].(string))
 	return (float64)(length), nil

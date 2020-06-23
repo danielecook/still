@@ -6,6 +6,8 @@ Functions operate at the **row** level.
 
 ```js
 if_else(condition, expr_if_true, expr_if_false)
+// A ternary operator is also supported.
+(condition ? expr_if_true : expr_if_false)
 ```
 
 * `condition` - An expression that evaluates to `TRUE` or `FALSE`.
@@ -56,3 +58,12 @@ configuration: count(color, size) <= 10 # Fails if the combination of values is 
 !!! note
 
     `count` does not work well on large datasets. It stores a hash digest of the arguments to test for uniqueness.
+
+##### null coalescence
+
+`??` can be used to set a default value.
+
+```
+(colname ?? 1) == 1 # returns TRUE if colname==NA/nil
+```
+

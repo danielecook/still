@@ -1,8 +1,10 @@
 # Schema
 
-Schemas begin with a set of `directives` which define global rules and settings.
+Schemas have the following structure:
 
-This is followed by rules for each column.
+* `directives` - specify global rules and settings.
+* `column rules` - Define a set of expressions on which to evaluate each column.
+* `data` __optional__ - a yaml-formatted dataset can be appended to the end of a schema to define value sets or other data used in validation.
 
 ## Directives
 
@@ -28,10 +30,26 @@ Sets the separater/delimiter for a data file. Do not quote the delimiter. Use `T
 
 `@sep` also works.
 
-## Column Definitions
+## Column Rules
 
-Column Definitions consist of a column and expressions for testing conditions on that column. For example, the following tests that the color column must be equal to red, blue or green.
+Column Rules consist of a column name and expressions to test for each column. For example, the following tests that the color column must be equal to `red`, `blue` or `green`.
 
 ```yaml
 color: any("red", "blue", "green")
+```
+
+## Data
+
+Adding a dashline (`---`) signals the beginning of the data section. Any content below the dashline is parsed as YAML and can be accessed in expressions using `yaml_data`.
+
+## Comments
+
+You can add comments to your schema file using `//` or `/* block */`. For example:
+
+```yaml
+// This is a comment
+color: any("blue", "red", "green") // expression for the color column
+/*
+    Using a block comment is fun
+*/
 ```

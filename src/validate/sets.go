@@ -9,6 +9,14 @@ import (
 func any(args ...interface{}) (interface{}, error) {
 	// Checks for an element present in a set.
 	for _, val := range args[1:] {
+		subVal, ok := val.([]interface{})
+		if ok {
+			for _, i := range subVal {
+				if args[0] == i {
+					return (bool)(true), nil
+				}
+			}
+		}
 		if args[0] == val {
 			return (bool)(true), nil
 		}

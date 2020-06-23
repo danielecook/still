@@ -15,9 +15,8 @@ nav:
     - Still: index.md
     - Getting Started: getting-started.md
     - Schema: schema.md
-    - Functions:
-        Functions: functions.md
-        Expressions: expressions.md
+    - Column Rules: column-rules.md
+    - Functions: functions.md
 
 
 extra_css:

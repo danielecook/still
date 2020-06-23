@@ -1,3 +1,9 @@
+/*
+  This is a schema
+*/
+// Another comment
 @separater TAB
 @na_values NA NULL ""
 letters: is_subset_list("A,B,C", ",")
+---
+

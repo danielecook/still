@@ -27,6 +27,7 @@ var utilFunctions = map[string]govaluate.ExpressionFunction{
 	"min":     minFunc,
 	"if_else": ifElse,
 	"count":   countFunc,
+	"print":   print,
 	// strings
 	"to_upper": toUpper,
 	"to_lower": toLower,
@@ -162,10 +163,11 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 		}
 
 		// Set parameters
-		parameters := make(map[string]interface{}, len(record))
+		parameters := make(MapParameters, len(record))
 		for idx := range record {
 			parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
 		}
+
 		// Add additional parameters
 		// Bools
 		parameters["true"] = true
@@ -178,7 +180,13 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			if isNil(currentVar) {
 				continue
 			}
+
+			// set parameters
 			parameters["current_var_"] = currentVar
+			// for d, v := range schema.YAMLData {
+			// 	parameters[d.(string)] = v
+			// }
+			parameters["data_"] = schema.YAMLData
 
 			var funcSet = strings.Join(functionKeys(testFunctions), "|")
 
@@ -207,7 +215,7 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			if err != nil {
 				log.Fatal(err)
 			}
-			result, err := expression.Evaluate(parameters)
+			result, err := expression.Eval(parameters)
 			if err != nil {
 				log.Fatal(err)
 			}
