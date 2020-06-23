@@ -101,13 +101,20 @@ func indexOf(word string, data []string) int {
 	return -1
 }
 
+type NA string
+
+func (c NA) String() string {
+	fmt.Println("Executing String() for NA!")
+	return string(c)
+}
+
 func typeConvert(val string, NA_vals []string) interface{} {
 	/*
 		Automatically converts types
 	*/
 	for _, na := range NA_vals {
 		if val == na {
-			return nil
+			return NA(na)
 		}
 	}
 
@@ -182,9 +189,6 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
 			// TODO: Allow evaluation of NA values conditionally?
-			if isNil(currentVar) {
-				continue
-			}
 
 			// set parameters
 			parameters["current_var_"] = currentVar

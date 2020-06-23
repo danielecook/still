@@ -58,7 +58,18 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
+func isNA(args ...interface{}) bool {
+	_, ok := args[0].(NA)
+	if ok {
+		return true
+	}
+	return false
+}
+
 func isSubsetList(args ...interface{}) (interface{}, error) {
+	if isNA(args[0]) {
+		return (bool)(true), nil
+	}
 	testVals := strings.Split(args[0].(string), ",")
 	okVals := strings.Split(args[1].(string), args[2].(string))
 	for _, i := range testVals {

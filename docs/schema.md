@@ -15,7 +15,7 @@ Directives are assigned using a `@` prefix and apply global settings.
 Use `@na_values` to specify values to treat as `NA`. See [Handling Missing Data](### Handling missing data) for more details.
 
 ```yaml
-@na_values NA NULL
+@na_values NA
 ```
 
 ### `@empty_values`
@@ -25,7 +25,7 @@ Use `@empty_values` to specify values to treat as `empty`.
 Values to treat as missing or `NA`. Use `""` for empty cells. See [Handling Missing Data](### Handling missing data) for more details.
 
 ```yaml
-@empty_values ""
+@empty_values "" NULL
 ```
 
 ### `@separater`

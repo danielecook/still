@@ -36,7 +36,6 @@ func isString(args ...interface{}) (interface{}, error) {
 	tNum, _ := isNumeric(args[0])
 	tInt, _ := isInt(args[0])
 	tBool, _ := isBool(args[0])
-	fmt.Printf("%v %v %v\n", tNum, tInt, tBool)
 	if tNum == false &&
 		tInt == false &&
 		tBool == false {

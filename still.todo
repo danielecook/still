@@ -72,7 +72,7 @@
 * [ ] SingleLineComment	::=	//[\S\t ]*	/* xgc:regular-expression */
 * [ ] MultiLineComment	::=	\/\*(?:[^*\r\n]+|(?:\r?\n))*\*\/	/* xgc:regular-expression */
 * [ ] QuotedColumnIdentifier	::=	StringLiteral	
-* [ ] ColumnRule	::=	ColumnValidationExpr* ColumnDirectives	
+* [x] ColumnRule	::=	ColumnValidationExpr* ColumnDirectives	
 * [ ] ColumnDirectives	::=	OptionalDirective? MatchIsFalseDirective? IgnoreCaseDirective? WarningDirective?	/* xgc:unordered */
 * [ ] OptionalDirective	::=	DirectivePrefix "optional"	
 * [ ] MatchIsFalseDirective	::=	DirectivePrefix "matchIsFalse"	
