@@ -57,7 +57,7 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"is_positive": isPositive,
 	"is_negative": isNegative,
 	// Types
-	// Add is_string()
+	"is_string":  isString,
 	"is_numeric": isNumeric,
 	"is_int":     isInt,
 	"is_bool":    isBool,
@@ -135,7 +135,7 @@ func typeConvert(val string, NA_vals []string) interface{} {
 	return val
 }
 
-// TODO: Replace fname with iterator from excel, csv, etc.
+// RunValidation
 func RunValidation(input string, schema schema.SchemaRules) bool {
 
 	f, err := reader.NewReader(input, schema)
@@ -144,11 +144,16 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 	colnames, err := f.ReadHeader()
 	utils.Check(err)
 
-	// Set all columns as valid to start
+	// Set all columns as valid or nil to start
 	ColumnStatus := make([]output.ValidCol, len(colnames))
 	for k := range colnames {
 		ColumnStatus[k].Name = colnames[k]
-		ColumnStatus[k].IsValid = true
+		ColumnStatus[k].IsValid = 0
+		for _, schemaCol := range schema.Columns {
+			if schemaCol.Name == ColumnStatus[k].Name {
+				ColumnStatus[k].IsValid = 1
+			}
+		}
 	}
 
 	stopRead := false
@@ -183,9 +188,6 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 
 			// set parameters
 			parameters["current_var_"] = currentVar
-			// for d, v := range schema.YAMLData {
-			// 	parameters[d.(string)] = v
-			// }
 			parameters["data_"] = schema.YAMLData
 
 			var funcSet = strings.Join(functionKeys(testFunctions), "|")
@@ -223,7 +225,7 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			// Log results
 			if result == false {
 				colIndex := indexOf(col.Name, colnames)
-				ColumnStatus[colIndex].IsValid = false
+				ColumnStatus[colIndex].IsValid = 2
 				ColumnStatus[colIndex].NErrs++
 
 				// Output log error
@@ -244,7 +246,7 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 
 	// Fail if any single column fails
 	for _, i := range ColumnStatus {
-		if i.IsValid == false {
+		if i.IsValid == 2 {
 			return false
 		}
 	}
