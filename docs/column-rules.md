@@ -185,13 +185,21 @@ Tests whether a string is a valid URL
 #### Types
 
 ##### `is_numeric`
+
+Checks if the value numeric.
+
 ##### `is_int`
 
-Test for numeric or integer values.
+Checks if the value an integer.
 
 ##### `is_bool`
 
 Tests that column contains `true`, `TRUE`, `false`, or `FALSE`
+
+##### `is_string`
+
+Checks if the value is a string. This is done by checking that it does not look like an integer, bool, or numeric.
+
 
 #### Dates
 

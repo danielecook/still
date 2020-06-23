@@ -68,7 +68,7 @@
 * [ ] PermitEmptyDirective	::=	DirectivePrefix "permitEmpty"	
 * [ ] NoHeaderDirective	::=	DirectivePrefix "noHeader"	
 * [ ] IgnoreColumnNameCaseDirective	::=	DirectivePrefix "ignoreColumnNameCase"	
-* [ ] Comment	::=	SingleLineComment | MultiLineComment	
+* [x] Comment	::=	SingleLineComment | MultiLineComment	
 * [ ] SingleLineComment	::=	//[\S\t ]*	/* xgc:regular-expression */
 * [ ] MultiLineComment	::=	\/\*(?:[^*\r\n]+|(?:\r?\n))*\*\/	/* xgc:regular-expression */
 * [ ] QuotedColumnIdentifier	::=	StringLiteral	
