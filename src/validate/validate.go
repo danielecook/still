@@ -169,6 +169,48 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 		}
 	}
 
+	/*
+		First compile expressions
+	*/
+	var rule string
+	var expressions = make([]*govaluate.EvaluableExpression, len(schema.Columns))
+	var funcSet = strings.Join(functionKeys(testFunctions), "|")
+	var functions = combineFunctionSets(testFunctions, utilFunctions)
+	for idx, col := range schema.Columns {
+
+		// Allow for explcit references by removing them initialy
+		explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[,]?", funcSet, col.Name))
+		rule = explicitReplace.ReplaceAllString(col.Rule, "$1(")
+
+		// Add implicit variables; Remove trailing commas
+		funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
+		utils.Check(err)
+		rule = funcMatch.ReplaceAllString(rule, "$1(current_var_,")
+		rule = strings.Replace(rule, ",)", ")", -1)
+
+		// Key functions require the variable name to create a key
+		keyFunc, err := regexp.Compile(fmt.Sprintf("(%s)\\(([^)]+)", strings.Join(keyFunctions, "|")))
+		utils.Check(err)
+		rule = keyFunc.ReplaceAllString(rule, fmt.Sprintf("$1(\"%s:$2\",$2", col.Name))
+
+		// Parse expressions
+		expr, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
+		if err != nil {
+			log.Fatal(err)
+		}
+		expressions[idx] = expr
+	}
+
+	/*
+		Then run the expressions on every row
+	*/
+
+	// Setup parameters with initial data
+	parameters := make(MapParameters, len(colnames))
+	parameters["true"] = true
+	parameters["false"] = false
+	parameters["data_"] = schema.YAMLData
+
 	stopRead := false
 	for ok := true; ok; ok = (stopRead == false) {
 		record, readErr := f.Read()
@@ -180,34 +222,17 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			log.Fatal(err)
 		}
 
-		/*
-			Once expressions are compiled run on every row.
-		*/
+		for idx := range record {
+			parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
+		}
+
 		for idx, col := range schema.Columns {
 
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
-
-			// Set parameters
-			parameters := make(MapParameters, len(record))
-			for idx := range record {
-				parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
-			}
-
-			// Add additional parameters
-			// Bools
-			parameters["true"] = true
-			parameters["false"] = false
-
-			// set parameters
 			parameters["current_var_"] = currentVar
-			parameters["data_"] = schema.YAMLData
 
-			// Key functions require the variable name to create a key
-			keyFunc, err := regexp.Compile(fmt.Sprintf("(%s)\\(([^)]+)", strings.Join(keyFunctions, "|")))
-			utils.Check(err)
-
-			result, exprError := expression.Eval(parameters)
+			result, exprError := expressions[idx].Eval(parameters)
 
 			// Log results
 			if result == false {
