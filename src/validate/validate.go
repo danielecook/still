@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/Knetic/govaluate"
@@ -32,16 +31,18 @@ var utilFunctions = map[string]govaluate.ExpressionFunction{
 	"to_upper": toUpper,
 	"to_lower": toLower,
 	"replace":  replace,
+	// Cumulative
+	"last": last,
 }
 
 // Define functions
-var testFunctions = map[string]govaluate.ExpressionFunction{
+var testExpressions = map[string]govaluate.ExpressionFunction{
 	// Test Functions
 	"is":  is,
 	"not": not,
 	// Sets
 	"any":            any,
-	"last":           last,
+	"identical":      identical,
 	"unique":         uniqueFunc,
 	"is_subset_list": isSubsetList,
 	// Strings
@@ -75,36 +76,8 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 
 var keyFunctions = []string{
 	"unique",
+	"identical",
 	"last",
-}
-
-func combineFunctionSets(ms ...map[string]govaluate.ExpressionFunction) map[string]govaluate.ExpressionFunction {
-	res := map[string]govaluate.ExpressionFunction{}
-	for _, m := range ms {
-		for k, v := range m {
-			res[k] = v
-		}
-	}
-	return res
-}
-
-func functionKeys(functions map[string]govaluate.ExpressionFunction) []string {
-	evalFuncs := make([]string, len(functions))
-	i := 0
-	for k := range functions {
-		evalFuncs[i] = k
-		i++
-	}
-	return evalFuncs
-}
-
-func indexOf(word string, data []string) int {
-	for k, v := range data {
-		if word == v {
-			return k
-		}
-	}
-	return -1
 }
 
 type NA string
@@ -112,40 +85,6 @@ type NA string
 func (c NA) String() string {
 	fmt.Println("Executing String() for NA!")
 	return string(c)
-}
-
-func typeConvert(val string, NA_vals []string) interface{} {
-	/*
-		Automatically converts types
-	*/
-	for _, na := range NA_vals {
-		if val == na {
-			return NA(na)
-		}
-	}
-
-	// bool
-	if strings.ToUpper(val) == "TRUE" {
-		return true
-	}
-	if strings.ToUpper(val) == "FALSE" {
-		return false
-	}
-
-	// integer
-	valInt, err := strconv.Atoi(val)
-	if err == nil {
-		return valInt
-	}
-
-	// float
-	valFloat, err := strconv.ParseFloat(val, 64)
-	if err == nil {
-		return valFloat
-	}
-
-	// string
-	return val
 }
 
 // RunValidation
@@ -174,8 +113,8 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 	*/
 	var rule string
 	var expressions = make([]*govaluate.EvaluableExpression, len(schema.Columns))
-	var funcSet = strings.Join(functionKeys(testFunctions), "|")
-	var functions = combineFunctionSets(testFunctions, utilFunctions)
+	var funcSet = strings.Join(functionKeys(testExpressions), "|")
+	var functions = combineFunctionSets(testExpressions, utilFunctions)
 	for idx, col := range schema.Columns {
 
 		// Allow for explcit references by removing them initialy

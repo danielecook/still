@@ -88,6 +88,14 @@ color: unique(size, weight) # remember that color is implicit
 
     `unique` does not work well on large datasets. It stores a hash digest of the arguments to test for uniqueness.
 
+##### `identical`
+
+Tests whether all values of a column are identical.
+
+```yaml
+dataset_id: identical()
+```
+
 ##### `is_subset_list`
 
 ```
@@ -199,7 +207,6 @@ Tests that column contains `true`, `TRUE`, `false`, or `FALSE`
 ##### `is_string`
 
 Checks if the value is a string. This is done by checking that it does not look like an integer, bool, or numeric.
-
 
 #### Dates
 

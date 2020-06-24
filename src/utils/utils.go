@@ -1,6 +1,8 @@
 package utils
 
-import "log"
+import (
+	"log"
+)
 
 // Quick error check
 func Check(e error) {
