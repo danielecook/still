@@ -7,9 +7,6 @@ import (
 /*
 	Custom parameters implementation
 */
-type ParametersCustom interface {
-	Get(name string) (interface{}, error)
-}
 
 type MapParameters map[string]interface{}
 
