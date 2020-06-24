@@ -41,6 +41,7 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"not": not,
 	// Sets
 	"any":            any,
+	"last":           last,
 	"unique":         uniqueFunc,
 	"is_subset_list": isSubsetList,
 	// Strings
@@ -70,6 +71,11 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"file_min_size": fileMinSize,
 	"file_max_size": fileMaxSize,
 	"mimetype":      mimeTypeIs,
+}
+
+var keyFunctions = []string{
+	"unique",
+	"last",
 }
 
 func combineFunctionSets(ms ...map[string]govaluate.ExpressionFunction) map[string]govaluate.ExpressionFunction {
@@ -182,10 +188,6 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
 
-			// set parameters
-			parameters["current_var_"] = currentVar
-			parameters["data_"] = schema.YAMLData
-
 			// Set parameters
 			parameters := make(MapParameters, len(record))
 			for idx := range record {
@@ -196,6 +198,10 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			// Bools
 			parameters["true"] = true
 			parameters["false"] = false
+
+			// set parameters
+			parameters["current_var_"] = currentVar
+			parameters["data_"] = schema.YAMLData
 
 			// Key functions require the variable name to create a key
 			keyFunc, err := regexp.Compile(fmt.Sprintf("(%s)\\(([^)]+)", strings.Join(keyFunctions, "|")))
