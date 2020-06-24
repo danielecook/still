@@ -42,6 +42,12 @@ Converts a string to lowercase.
 
 Converts a string to uppercase.
 
+##### `replace`
+
+```
+replace(value, find, replace)
+```
+
 ##### `count`
 
 ```js

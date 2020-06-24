@@ -167,11 +167,11 @@ Tests whether a value is all uppercase.
 
 Tests whether a value is all lowercase.
 
-##### `replace(string, find, replace)`
+##### `length`
 
-Replace `find` with `replace` in `string`.
-
-##### `length(low, high = None)`
+```
+length(min_len, max_len)
+```
 
 Tests for string length in a given column.
 
