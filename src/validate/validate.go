@@ -174,57 +174,34 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			log.Fatal(err)
 		}
 
-		// Set parameters
-		parameters := make(MapParameters, len(record))
-		for idx := range record {
-			parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
-		}
+		/*
+			Once expressions are compiled run on every row.
+		*/
+		for idx, col := range schema.Columns {
 
-		// Add additional parameters
-		// Bools
-		parameters["true"] = true
-		parameters["false"] = false
-
-		for _, col := range schema.Columns {
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
-			// TODO: Allow evaluation of NA values conditionally?
 
 			// set parameters
 			parameters["current_var_"] = currentVar
 			parameters["data_"] = schema.YAMLData
 
-			var funcSet = strings.Join(functionKeys(testFunctions), "|")
+			// Set parameters
+			parameters := make(MapParameters, len(record))
+			for idx := range record {
+				parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
+			}
 
-			var rule string
-			// Allow for explcit references; They are removed (and added back later).
-			explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[,]?", funcSet, col.Name))
-			rule = explicitReplace.ReplaceAllString(col.Rule, "$1(")
+			// Add additional parameters
+			// Bools
+			parameters["true"] = true
+			parameters["false"] = false
 
-			// Now add implicit argument back
-			funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
+			// Key functions require the variable name to create a key
+			keyFunc, err := regexp.Compile(fmt.Sprintf("(%s)\\(([^)]+)", strings.Join(keyFunctions, "|")))
 			utils.Check(err)
 
-			rule = funcMatch.ReplaceAllString(rule, "$1(current_var_,")
-
-			// If function takes single value, remove trailing comma
-			rule = strings.Replace(rule, ",)", ")", -1)
-
-			// The unique function needs a key; Add as implicit column and arguments
-			uniqFunc, err := regexp.Compile("unique\\(([^)]+)")
-			utils.Check(err)
-			rule = uniqFunc.ReplaceAllString(rule, fmt.Sprintf("unique(\"%s:$1\",$1", col.Name))
-
-			// TODO : Parse these just once!
-			functions := combineFunctionSets(testFunctions, utilFunctions)
-			expression, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
-			if err != nil {
-				log.Fatal(err)
-			}
-			result, err := expression.Eval(parameters)
-			if err != nil {
-				log.Fatal(err)
-			}
+			result, exprError := expression.Eval(parameters)
 
 			// Log results
 			if result == false {
@@ -232,15 +209,21 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 				ColumnStatus[colIndex].IsValid = 2
 				ColumnStatus[colIndex].NErrs++
 
+				var infoLine string
+				if exprError != nil {
+					infoLine = aurora.Sprintf("%s (%s)", col.Rule, exprError)
+				} else {
+					infoLine = aurora.Sprintf("%s", col.Rule)
+				}
+
 				// Output log error
 				fmt.Println(
-					aurora.Sprintf("%s:%s[%d] %s → '%s'",
+					aurora.Sprintf("%5s:%-20s\t%5s\t%-15v\t→\t%s",
 						aurora.Red("Error"),
 						aurora.Yellow(col.Name),
-						f.Row(),
-						aurora.Blue(col.Rule),
-						currentVar))
-
+						fmt.Sprintf("[%d]", f.Row()),
+						aurora.Yellow(currentVar),
+						aurora.Blue(infoLine)))
 			}
 		}
 
