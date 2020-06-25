@@ -115,6 +115,11 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 	var expressions = make([]*govaluate.EvaluableExpression, len(schema.Columns))
 	var funcSet = strings.Join(functionKeys(testExpressions), "|")
 	var functions = combineFunctionSets(testExpressions, utilFunctions)
+
+	//	Directive checks
+	schema.IsOrdered(colnames)
+	schema.IsFixed(colnames)
+
 	for idx, col := range schema.Columns {
 
 		// Allow for explcit references by removing them initialy
@@ -199,7 +204,7 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 
 	}
 
-	output.PrintSummary(ColumnStatus)
+	output.PrintSummary(ColumnStatus, schema)
 
 	// Fail if any single column fails
 	for _, i := range ColumnStatus {

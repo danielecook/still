@@ -23,9 +23,16 @@ type SchemaRules struct {
 	// Directives
 	Separater    rune
 	ExactColumns int
-	Comment      rune
-	NA           []string
-	YAMLData     map[string]interface{}
+	// Checks
+	CheckOrdered bool
+	Ordered      bool
+	CheckFixed   bool
+	Fixed        bool
+	// Other
+	Comment  rune
+	Errors   int // count of schema-specific errors
+	NA       []string
+	YAMLData map[string]interface{}
 
 	// Columns
 	Columns []Col
@@ -140,6 +147,10 @@ schema:
 				Schema.Separater = setSeparator(parseDirectiveValue(line))
 			case strings.HasPrefix(line, "@na_values"):
 				Schema.NA = parseDirectiveStrArray(line)
+			case line == "@ordered":
+				Schema.CheckOrdered = true
+			case line == "@fixed":
+				Schema.CheckFixed = true
 			case strings.HasPrefix(line, "@"):
 				log.Fatal(fmt.Sprintf("%s is an unknown directive", line))
 			default:

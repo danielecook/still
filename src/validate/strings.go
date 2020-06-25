@@ -10,6 +10,9 @@ import (
 )
 
 func regex(args ...interface{}) (interface{}, error) {
+	if isNA(args[0]) {
+		return (bool)(true), nil
+	}
 	isMatch, err := regexp.MatchString(args[1].(string), args[0].(string))
 	if err != nil {
 		log.Fatal(err)

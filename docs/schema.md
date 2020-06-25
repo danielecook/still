@@ -28,6 +28,22 @@ Values to treat as missing or `NA`. Use `""` for empty cells. See [Handling Miss
 @empty_values "" NULL
 ```
 
+### `@ordered`
+
+Require that the columns appear in the same order as specified in the schema. 
+
+```
+@ordered
+```
+
+### `@fixed`
+
+Require that column names match the schema in the same order.
+
+```
+@fixed
+```
+
 ### `@separater`
 
 Sets the separater/delimiter for a data file. Do not quote the delimiter. Use `TAB` or `\t` for tab-delimited data.
