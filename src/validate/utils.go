@@ -69,3 +69,13 @@ func typeConvert(val string, NA_vals []string) interface{} {
 	// string
 	return val
 }
+
+// isNA is used to test
+// for NA values internally
+func isNA(args ...interface{}) bool {
+	_, ok := args[0].(NA)
+	if ok {
+		return true
+	}
+	return false
+}
