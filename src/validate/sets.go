@@ -33,6 +33,7 @@ func any(args ...interface{}) (interface{}, error) {
 var uniqueMap = map[string]map[string]int{}
 
 func digestArgs(args ...interface{}) string {
+
 	h := sha1.New()
 	return string(h.Sum([]byte(fmt.Sprintf("%v", args))))
 }
@@ -74,7 +75,16 @@ func isSubsetList(args ...interface{}) (interface{}, error) {
 		return (bool)(true), nil
 	}
 	testVals := strings.Split(args[0].(string), ",")
-	okVals := strings.Split(args[1].(string), args[2].(string))
+	var okVals []string
+	switch v := args[1].(type) {
+	case string:
+		okVals = strings.Split(v, args[2].(string))
+	case []interface{}:
+		okVals = make([]string, len(v))
+		for i, v := range v {
+			okVals[i] = v.(string)
+		}
+	}
 	for _, i := range testVals {
 		if stringInSlice(i, okVals) == false {
 			return (bool)(false), nil

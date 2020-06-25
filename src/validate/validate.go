@@ -80,10 +80,16 @@ var keyFunctions = []string{
 	"last",
 }
 
+/*
+	Missing Data
+*/
 type NA string
+type EMPTY string
 
 func (c NA) String() string {
-	fmt.Println("Executing String() for NA!")
+	return string(c)
+}
+func (c EMPTY) String() string {
 	return string(c)
 }
 
@@ -137,6 +143,10 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 		utils.Check(err)
 		rule = keyFunc.ReplaceAllString(rule, fmt.Sprintf("$1(\"%s:$2\",$2", col.Name))
 
+		// If no expression is supplied set to true
+		if rule == "" {
+			rule = "true"
+		}
 		// Parse expressions
 		expr, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
 		if err != nil {
