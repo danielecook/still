@@ -42,7 +42,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: still
+          name: ${{ matrix.asset_name }}
           path: ${{ matrix.asset_name }}
 
       - name: Create Release
