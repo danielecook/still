@@ -13,4 +13,4 @@ jobs:
         uses: mhausenblas/mkdocs-deploy-gh-pages@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CUSTOM_DOMAIN: https://www.danielecook.com/still
+          CUSTOM_DOMAIN: www.danielecook.com
