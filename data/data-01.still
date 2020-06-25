@@ -4,6 +4,22 @@
 // Another comment
 @separater TAB
 @na_values NA NULL ""
+@fixed
+currency: regex("[A-Z]{3}")
 letters: is_subset_list("A,B,C", ",")
+identical_col: identical()
 ---
-
+great:
+  - SZL
+  - THB
+  - TVD
+  - TWD
+  - USD
+  - UYU
+  - VND
+  - WST
+  - XOF
+  - XPF
+  - YER
+  - ZMW
+  - BDT
