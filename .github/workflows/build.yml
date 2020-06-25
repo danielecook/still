@@ -7,6 +7,13 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            asset_name: still_linux
+          - os: windows-latest
+            asset_name: still.exe
+          - os: macos-latest
+            asset_name: still
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -28,11 +35,15 @@ jobs:
         run: | 
           go build -v
       
+      - name: Move binary to correct location
+        if: matrix.os == "ubuntu-latest"
+        run: move still ${{ matrix.asset_name }}
+      
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
           name: still
-          path: still
+          path: ${{ matrix.asset_name }}
 
       - name: Create Release
         id: create_release
@@ -48,10 +59,11 @@ jobs:
 
       - name: Upload ${{ matrix.name }} Release Asset
         uses: actions/upload-release-asset@v1.0.1
-        if: contains(github.ref, 'tags/v')
+        if: contains(github.ref, 'tags/v') && matrix.os == ""
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: still
-          asset_name: still
+          asset_path: ${{ matrix.asset_name }}
+          asset_name: ${{ matrix.asset_name }}
+          asset_content_type: application/octet-stream 
