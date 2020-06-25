@@ -5,7 +5,6 @@ import (
 	"io"
 	"log"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/Knetic/govaluate"
@@ -27,19 +26,23 @@ var utilFunctions = map[string]govaluate.ExpressionFunction{
 	"min":     minFunc,
 	"if_else": ifElse,
 	"count":   countFunc,
+	"print":   print,
 	// strings
 	"to_upper": toUpper,
 	"to_lower": toLower,
 	"replace":  replace,
+	// Cumulative
+	"last": last,
 }
 
 // Define functions
-var testFunctions = map[string]govaluate.ExpressionFunction{
+var testExpressions = map[string]govaluate.ExpressionFunction{
 	// Test Functions
 	"is":  is,
 	"not": not,
 	// Sets
 	"any":            any,
+	"identical":      identical,
 	"unique":         uniqueFunc,
 	"is_subset_list": isSubsetList,
 	// Strings
@@ -56,7 +59,7 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"is_positive": isPositive,
 	"is_negative": isNegative,
 	// Types
-	// Add is_string()
+	"is_string":  isString,
 	"is_numeric": isNumeric,
 	"is_int":     isInt,
 	"is_bool":    isBool,
@@ -71,70 +74,26 @@ var testFunctions = map[string]govaluate.ExpressionFunction{
 	"mimetype":      mimeTypeIs,
 }
 
-func combineFunctionSets(ms ...map[string]govaluate.ExpressionFunction) map[string]govaluate.ExpressionFunction {
-	res := map[string]govaluate.ExpressionFunction{}
-	for _, m := range ms {
-		for k, v := range m {
-			res[k] = v
-		}
-	}
-	return res
+var keyFunctions = []string{
+	"unique",
+	"identical",
+	"last",
 }
 
-func functionKeys(functions map[string]govaluate.ExpressionFunction) []string {
-	evalFuncs := make([]string, len(functions))
-	i := 0
-	for k := range functions {
-		evalFuncs[i] = k
-		i++
-	}
-	return evalFuncs
+/*
+	Missing Data
+*/
+type NA string
+type EMPTY string
+
+func (c NA) String() string {
+	return string(c)
+}
+func (c EMPTY) String() string {
+	return string(c)
 }
 
-func indexOf(word string, data []string) int {
-	for k, v := range data {
-		if word == v {
-			return k
-		}
-	}
-	return -1
-}
-
-func typeConvert(val string, NA_vals []string) interface{} {
-	/*
-		Automatically converts types
-	*/
-	for _, na := range NA_vals {
-		if val == na {
-			return nil
-		}
-	}
-
-	// bool
-	if strings.ToUpper(val) == "TRUE" {
-		return true
-	}
-	if strings.ToUpper(val) == "FALSE" {
-		return false
-	}
-
-	// integer
-	valInt, err := strconv.Atoi(val)
-	if err == nil {
-		return valInt
-	}
-
-	// float
-	valFloat, err := strconv.ParseFloat(val, 64)
-	if err == nil {
-		return valFloat
-	}
-
-	// string
-	return val
-}
-
-// TODO: Replace fname with iterator from excel, csv, etc.
+// RunValidation
 func RunValidation(input string, schema schema.SchemaRules) bool {
 
 	f, err := reader.NewReader(input, schema)
@@ -143,12 +102,68 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 	colnames, err := f.ReadHeader()
 	utils.Check(err)
 
-	// Set all columns as valid to start
+	// Set all columns as valid or nil to start
 	ColumnStatus := make([]output.ValidCol, len(colnames))
 	for k := range colnames {
 		ColumnStatus[k].Name = colnames[k]
-		ColumnStatus[k].IsValid = true
+		ColumnStatus[k].IsValid = 0
+		for _, schemaCol := range schema.Columns {
+			if schemaCol.Name == ColumnStatus[k].Name {
+				ColumnStatus[k].IsValid = 1
+			}
+		}
 	}
+
+	/*
+		First compile expressions
+	*/
+	var rule string
+	var expressions = make([]*govaluate.EvaluableExpression, len(schema.Columns))
+	var funcSet = strings.Join(functionKeys(testExpressions), "|")
+	var functions = combineFunctionSets(testExpressions, utilFunctions)
+
+	//	Directive checks
+	schema.IsOrdered(colnames)
+	schema.IsFixed(colnames)
+
+	for idx, col := range schema.Columns {
+
+		// Allow for explcit references by removing them initialy
+		explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[,]?", funcSet, col.Name))
+		rule = explicitReplace.ReplaceAllString(col.Rule, "$1(")
+
+		// Add implicit variables; Remove trailing commas
+		funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
+		utils.Check(err)
+		rule = funcMatch.ReplaceAllString(rule, "$1(current_var_,")
+		rule = strings.Replace(rule, ",)", ")", -1)
+
+		// Key functions require the variable name to create a key
+		keyFunc, err := regexp.Compile(fmt.Sprintf("(%s)\\(([^)]+)", strings.Join(keyFunctions, "|")))
+		utils.Check(err)
+		rule = keyFunc.ReplaceAllString(rule, fmt.Sprintf("$1(\"%s:$2\",$2", col.Name))
+
+		// If no expression is supplied set to true
+		if rule == "" {
+			rule = "true"
+		}
+		// Parse expressions
+		expr, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
+		if err != nil {
+			log.Fatal(err)
+		}
+		expressions[idx] = expr
+	}
+
+	/*
+		Then run the expressions on every row
+	*/
+
+	// Setup parameters with initial data
+	parameters := make(MapParameters, len(colnames))
+	parameters["true"] = true
+	parameters["false"] = false
+	parameters["data_"] = schema.YAMLData
 
 	stopRead := false
 	for ok := true; ok; ok = (stopRead == false) {
@@ -161,82 +176,49 @@ func RunValidation(input string, schema schema.SchemaRules) bool {
 			log.Fatal(err)
 		}
 
-		// Set parameters
-		parameters := make(map[string]interface{}, len(record))
 		for idx := range record {
 			parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
 		}
-		// Add additional parameters
-		// Bools
-		parameters["true"] = true
-		parameters["false"] = false
 
-		for _, col := range schema.Columns {
+		for idx, col := range schema.Columns {
+
 			// Add in current column
 			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
-			// TODO: Allow evaluation of NA values conditionally?
-			if isNil(currentVar) {
-				continue
-			}
 			parameters["current_var_"] = currentVar
 
-			var funcSet = strings.Join(functionKeys(testFunctions), "|")
-
-			var rule string
-			// Allow for explcit references; They are removed (and added back later).
-			explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[,]?", funcSet, col.Name))
-			rule = explicitReplace.ReplaceAllString(col.Rule, "$1(")
-
-			// Now add implicit argument back
-			funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
-			utils.Check(err)
-
-			rule = funcMatch.ReplaceAllString(rule, "$1(current_var_,")
-
-			// If function takes single value, remove trailing comma
-			rule = strings.Replace(rule, ",)", ")", -1)
-
-			// The unique function needs a key; Add as implicit column and arguments
-			uniqFunc, err := regexp.Compile("unique\\(([^)]+)")
-			utils.Check(err)
-			rule = uniqFunc.ReplaceAllString(rule, fmt.Sprintf("unique(\"%s:$1\",$1", col.Name))
-
-			// TODO : Parse these just once!
-			functions := combineFunctionSets(testFunctions, utilFunctions)
-			expression, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
-			if err != nil {
-				log.Fatal(err)
-			}
-			result, err := expression.Evaluate(parameters)
-			if err != nil {
-				log.Fatal(err)
-			}
+			result, exprError := expressions[idx].Eval(parameters)
 
 			// Log results
 			if result == false {
 				colIndex := indexOf(col.Name, colnames)
-				ColumnStatus[colIndex].IsValid = false
+				ColumnStatus[colIndex].IsValid = 2
 				ColumnStatus[colIndex].NErrs++
+
+				var infoLine string
+				if exprError != nil {
+					infoLine = aurora.Sprintf("%s (%s)", col.Rule, exprError)
+				} else {
+					infoLine = aurora.Sprintf("%s", col.Rule)
+				}
 
 				// Output log error
 				fmt.Println(
-					aurora.Sprintf("%s:%s[%d] %s → '%s'",
+					aurora.Sprintf("%5s:%-20s\t%5s\t%-15v\t→\t%s",
 						aurora.Red("Error"),
 						aurora.Yellow(col.Name),
-						f.Row(),
-						aurora.Blue(col.Rule),
-						currentVar))
-
+						fmt.Sprintf("[%d]", f.Row()),
+						aurora.Yellow(currentVar),
+						aurora.Blue(infoLine)))
 			}
 		}
 
 	}
 
-	output.PrintSummary(ColumnStatus)
+	output.PrintSummary(ColumnStatus, schema)
 
 	// Fail if any single column fails
 	for _, i := range ColumnStatus {
-		if i.IsValid == false {
+		if i.IsValid == 2 {
 			return false
 		}
 	}

@@ -31,3 +31,15 @@ func isBool(args ...interface{}) (interface{}, error) {
 	}
 	return (bool)(false), nil
 }
+
+func isString(args ...interface{}) (interface{}, error) {
+	tNum, _ := isNumeric(args[0])
+	tInt, _ := isInt(args[0])
+	tBool, _ := isBool(args[0])
+	if tNum == false &&
+		tInt == false &&
+		tBool == false {
+		return (bool)(true), nil
+	}
+	return (bool)(false), nil
+}

@@ -8,6 +8,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
+	"github.com/danielecook/still/src/utils"
+	"gopkg.in/yaml.v2"
 )
 
 type Col struct {
@@ -20,8 +23,16 @@ type SchemaRules struct {
 	// Directives
 	Separater    rune
 	ExactColumns int
-	Comment      rune
-	NA           []string
+	// Checks
+	CheckOrdered bool
+	Ordered      bool
+	CheckFixed   bool
+	Fixed        bool
+	// Other
+	Comment  rune
+	Errors   int // count of schema-specific errors
+	NA       []string
+	YAMLData map[string]interface{}
 
 	// Columns
 	Columns []Col
@@ -61,7 +72,7 @@ func parseColumn(line string) Col {
 
 		latitude: in_range(-90, 90) # The latitude
 	*/
-	reColumn, err := regexp.Compile("^([^: ]+):([^$#]+)(#.*$)?")
+	reColumn, err := regexp.Compile("^([^: ]+):([^$#]+)?(#.*$)?")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -83,6 +94,13 @@ func setSeparator(sep string) rune {
 	return rune(sep[0])
 }
 
+func parseYaml(yamlData string) map[string]interface{} {
+	m := make(map[string]interface{})
+	err := yaml.Unmarshal([]byte(yamlData), &m)
+	utils.Check(err)
+	return m
+}
+
 // Parse Schema - Entrypoint
 func ParseSchema(schemaFile string) SchemaRules {
 	file, err := os.Open(schemaFile)
@@ -92,10 +110,34 @@ func ParseSchema(schemaFile string) SchemaRules {
 	defer file.Close()
 
 	var Schema = SchemaRules{}
+	var commentOpen = false
+	commentEnd, err := regexp.Compile("\\/\\/.*$")
+	utils.Check(err)
 
 	scanner := bufio.NewScanner(file)
+
+schema:
 	for scanner.Scan() {
-		line := scanner.Text()
+		line := strings.Trim(scanner.Text(), " ")
+		line = commentEnd.ReplaceAllString(line, "")
+
+		switch {
+		// If an empty line, comment has already been removed.
+		case line == "":
+			continue
+		case strings.HasPrefix(line, "/*"):
+			commentOpen = true
+			continue
+		case strings.HasSuffix(line, "*/"):
+			commentOpen = false
+			continue
+		case commentOpen:
+			continue
+		case line == "---":
+			// If dashline, break and read yaml data
+			break schema
+		}
+
 		// Parse Directives
 		if strings.HasPrefix(line, "@") {
 			switch {
@@ -105,10 +147,12 @@ func ParseSchema(schemaFile string) SchemaRules {
 				Schema.Separater = setSeparator(parseDirectiveValue(line))
 			case strings.HasPrefix(line, "@na_values"):
 				Schema.NA = parseDirectiveStrArray(line)
+			case line == "@ordered":
+				Schema.CheckOrdered = true
+			case line == "@fixed":
+				Schema.CheckFixed = true
 			case strings.HasPrefix(line, "@"):
 				log.Fatal(fmt.Sprintf("%s is an unknown directive", line))
-			case strings.HasPrefix(line, "#"):
-				continue
 			default:
 				Schema.Separater = '\t'
 			}
@@ -119,6 +163,13 @@ func ParseSchema(schemaFile string) SchemaRules {
 			Schema.Columns = append(Schema.Columns, parseColumn(line))
 		}
 	}
+
+	var yamlString string
+	for scanner.Scan() {
+		// Read in yaml data
+		yamlString += scanner.Text() + "\n"
+	}
+	Schema.YAMLData = parseYaml(yamlString)
 
 	if err := scanner.Err(); err != nil {
 		log.Fatal(err)

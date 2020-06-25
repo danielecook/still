@@ -10,7 +10,10 @@ import (
 )
 
 func regex(args ...interface{}) (interface{}, error) {
-	isMatch, err := regexp.MatchString(args[1].(string), args[0].(string))
+	if isNA(args[0]) {
+		return (bool)(true), nil
+	}
+	isMatch, err := regexp.MatchString(args[1].(string), fmt.Sprintf("%v", args[0]))
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -18,12 +21,18 @@ func regex(args ...interface{}) (interface{}, error) {
 }
 
 func uppercase(args ...interface{}) (interface{}, error) {
+	if isNA(args[0]) {
+		return (bool)(true), nil
+	}
 	val := args[0].(string)
 	isUpper := strings.ToUpper(val) == val
 	return (bool)(isUpper), nil
 }
 
 func lowercase(args ...interface{}) (interface{}, error) {
+	if isNA(args[0]) {
+		return (bool)(true), nil
+	}
 	val := args[0].(string)
 	isUpper := strings.ToLower(val) == val
 	return (bool)(isUpper), nil

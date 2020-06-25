@@ -18,6 +18,27 @@ status: contains("# NOTE") && contains(color, "red")
 status: contains(status, "# NOTE") && contains(time, "# NOTE")
 ```
 
+### Operators
+
+`still` uses [Knetic/govaluate](https://github.com/Knetic/govaluate) to evaluate expressions. See [the manual](https://github.com/Knetic/govaluate/blob/master/MANUAL.md) for more detail on operators. The following operators are supported.
+
+* Modifiers: `+` `-` `/` `*` `&` `|` `^` `**` `%` `>>` `<<`
+* Comparators: `>` `>=` `<` `<=` `==` `!=` `=~` `!~`
+* Logical ops: `||` `&&`
+* Numeric constants, as 64-bit floating point (`12345.678`)
+* String constants (single quotes: `'foobar'`)
+* Date constants (__single quotes__, using any RFC3339, ISO8601, ruby date, or unix date; date parsing is automatically tried with any string constant)
+* Boolean constants: `true` `false`
+* Parenthesis to control order of evaluation `(` `)`
+* Arrays (anything separated by `,` within parenthesis: `(1, 2, 'foo')`)
+* Prefixes: `!` `-` `~`
+* Ternary conditional: `?` `:`
+* Null coalescence: `??`
+
+#### Dates
+
+Single quoted dates are parsed...
+
 ### Basic
 
 ##### `is`
@@ -44,6 +65,13 @@ Tests whether a value matches any of passed arguments.
 
 ```yaml
 color: any("red", "blue", "green")
+color: any(provider)
+```
+
+You can also use an array with the `IN` operator, but you must specify the column name:
+
+```yaml
+color: color IN ("red", "blue", "green")
 ```
 
 ##### `unique`
@@ -59,6 +87,14 @@ color: unique(size, weight) # remember that color is implicit
 !!! note
 
     `unique` does not work well on large datasets. It stores a hash digest of the arguments to test for uniqueness.
+
+##### `identical`
+
+Tests whether all values of a column are identical.
+
+```yaml
+dataset_id: identical()
+```
 
 ##### `is_subset_list`
 
@@ -111,11 +147,17 @@ Tests for the presence of a substring in a value.
 
 ##### `regex`
 
-```
+```js
 regex(expression)
 ```
 
 Tests whether a value matches a regular expression.
+
+You can also use `=~` or `!~` regex comparators.
+
+```js
+(colname =~ "L[0-9]+")
+```
 
 ##### `uppercase`
 
@@ -125,11 +167,11 @@ Tests whether a value is all uppercase.
 
 Tests whether a value is all lowercase.
 
-##### `replace(string, find, replace)`
+##### `length`
 
-Replace `find` with `replace` in `string`.
-
-##### `length(low, high = None)`
+```
+length(min_len, max_len)
+```
 
 Tests for string length in a given column.
 
@@ -151,13 +193,20 @@ Tests whether a string is a valid URL
 #### Types
 
 ##### `is_numeric`
+
+Checks if the value numeric.
+
 ##### `is_int`
 
-Test for numeric or integer values.
+Checks if the value an integer.
 
 ##### `is_bool`
 
 Tests that column contains `true`, `TRUE`, `false`, or `FALSE`
+
+##### `is_string`
+
+Checks if the value is a string. This is done by checking that it does not look like an integer, bool, or numeric.
 
 #### Dates
 

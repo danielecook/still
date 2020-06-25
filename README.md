@@ -21,14 +21,13 @@ am: any(0, 1)
 
 Then run the command line tool:
 
-```
+```bash
 still validate cars.schema cars.tsv
 ```
 
-# Test Expressions
-
-
-
 ## Notes
 
-`still` is largely influenced by [csv-validate](http://digital-preservation.github.io/csv-validator/), but offers more flexibility when validating tabular data.
+`still` is largely influenced by [csv-validate](http://digital-preservation.github.io/csv-validator/), but offers more flexibility when validating tabular data. Major differences include:
+
+* `still` allows you to specify column indexes by their name, meaning columns can be in any order.
+* `still` can read Excel files
