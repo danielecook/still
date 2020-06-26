@@ -23,26 +23,24 @@ jobs:
       - name: Run tests
         run: go test ./...
 
+      - name: Install gox
+        run: go install github.com/mitchellh/gox
+
       - name: Build 
         run: |
           $HOME/go/bin/gox -ldflags "-X main.Version=$VERSION_NUMBER" \
                            --output="$GOX_OUTPUT" \
                            --osarch="$GOX_OSARCH" \
-                           github.com/$GITHUB_REPOSITORY/still
+                           github.com/$GITHUB_REPOSITORY
         env:
-          GOX_OUTPUT: "./build/{{.OS}}/{{.Dir}}_{{.OS}}"
+          GOX_OUTPUT: "./{{.Dir}}_{{.OS}}"
           GOX_OSARCH: "linux/amd64 darwin/amd64 windows/amd64"
-
-      - name: Move macos binary name
-        run: |
-          mv still_darwin still
-          mv still_windows.exe still.exe
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: still
-          path: still*
+          name: still_macos
+          path: still_macos
 
       - name: Create Release
         id: create_release
@@ -53,7 +51,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: Release ${{ github.ref }}
-          draft: false
+          draft: true
           prerelease: false
 
       - name: Upload MACOS binary
@@ -63,8 +61,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: still
-          asset_name: 'still (macos)'
+          asset_path: still_macos
+          asset_name: still_macos
           asset_content_type: application/octet-stream
 
       - name: Upload Linux Binary
@@ -75,7 +73,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: still_linux
-          asset_name: 'still (linux)'
+          asset_name: still_linux
           asset_content_type: application/octet-stream
 
       - name: Upload Windows Binary
@@ -85,6 +83,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: still.exe
-          asset_name: 'still.exe (windows)'
+          asset_path: still_windows.exe
+          asset_name: still_windows.exe
           asset_content_type: application/octet-stream
