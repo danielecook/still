@@ -36,6 +36,9 @@ jobs:
           GOX_OUTPUT: "./{{.Dir}}_{{.OS}}"
           GOX_OSARCH: "linux/amd64 darwin/amd64 windows/amd64"
       
+      - name: Move Darwin
+        run: mv still_darwin still_macos
+
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
