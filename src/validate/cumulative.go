@@ -33,5 +33,4 @@ func last(args ...interface{}) (interface{}, error) {
 	}
 	lastValMap[lastKey] = args[1]
 	return lastValMap[lastKey], nil
-
 }

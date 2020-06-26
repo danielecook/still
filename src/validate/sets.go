@@ -7,7 +7,7 @@ import (
 )
 
 func any(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	// Checks for an element present in a set.
@@ -33,7 +33,6 @@ func any(args ...interface{}) (interface{}, error) {
 var uniqueMap = map[string]map[string]int{}
 
 func digestArgs(args ...interface{}) string {
-
 	h := sha1.New()
 	return string(h.Sum([]byte(fmt.Sprintf("%v", args))))
 }
@@ -63,7 +62,7 @@ func stringInSlice(a string, list []string) bool {
 }
 
 func isSubsetList(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	testVals := strings.Split(args[0].(string), ",")

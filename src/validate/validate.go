@@ -72,25 +72,16 @@ var testExpressions = map[string]govaluate.ExpressionFunction{
 	"file_min_size": fileMinSize,
 	"file_max_size": fileMaxSize,
 	"mimetype":      mimeTypeIs,
+	// Missing data
+	"is_na":      isNA,
+	"is_empty":   isEMPTY,
+	"is_missing": isMissing,
 }
 
 var keyFunctions = []string{
 	"unique",
 	"identical",
 	"last",
-}
-
-/*
-	Missing Data
-*/
-type NA string
-type EMPTY string
-
-func (c NA) String() string {
-	return string(c)
-}
-func (c EMPTY) String() string {
-	return string(c)
 }
 
 // RunValidation
@@ -177,20 +168,28 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 		}
 
 		for idx := range record {
-			parameters[colnames[idx]] = typeConvert(record[idx], schema.NA)
+			parameters[colnames[idx]] = typeConvert(record[idx], schema.NA, schema.EMPTY)
 		}
 
 		for idx, col := range schema.Columns {
-
+			colIndex := indexOf(col.Name, colnames)
 			// Add in current column
-			currentVar := typeConvert(record[indexOf(col.Name, colnames)], schema.NA)
+			currentVar := parameters[col.Name]
 			parameters["current_var_"] = currentVar
 
 			result, exprError := expressions[idx].Eval(parameters)
 
+			// Column Summary
+			if na, _ := isNA(currentVar); na.(bool) {
+				ColumnStatus[colIndex].NNA++
+			} else if empty, _ := isEMPTY(currentVar); empty.(bool) {
+				ColumnStatus[colIndex].NEMPTY++
+			} else if result == true {
+				ColumnStatus[colIndex].NVALID++
+			}
+
 			// Log results
 			if result == false {
-				colIndex := indexOf(col.Name, colnames)
 				ColumnStatus[colIndex].IsValid = 2
 				ColumnStatus[colIndex].NErrs++
 

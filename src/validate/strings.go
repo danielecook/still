@@ -10,7 +10,7 @@ import (
 )
 
 func regex(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	isMatch, err := regexp.MatchString(args[1].(string), fmt.Sprintf("%v", args[0]))
@@ -21,7 +21,7 @@ func regex(args ...interface{}) (interface{}, error) {
 }
 
 func uppercase(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	val := args[0].(string)
@@ -30,7 +30,7 @@ func uppercase(args ...interface{}) (interface{}, error) {
 }
 
 func lowercase(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	val := args[0].(string)
@@ -39,21 +39,33 @@ func lowercase(args ...interface{}) (interface{}, error) {
 }
 
 func starts(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	startsWith := strings.HasPrefix(args[0].(string), args[1].(string))
 	return (bool)(startsWith), nil
 }
 
 func ends(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	endsWith := strings.HasSuffix(args[0].(string), args[1].(string))
 	return (bool)(endsWith), nil
 }
 
 func contains(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	isIn := strings.Contains(fmt.Sprintf("%s", args[0]), args[1].(string))
 	return (bool)(isIn), nil
 }
 
 func length(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	s := len(fmt.Sprintf("%s", args[0]))
 	minLen := int(args[1].(float64))
 	var withinLen bool
@@ -77,6 +89,9 @@ func length(args ...interface{}) (interface{}, error) {
 }
 
 func isURL(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	return (bool)(govalidator.IsURL(args[0].(string))), nil
 }
 

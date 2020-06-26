@@ -7,7 +7,7 @@ import (
 )
 
 func isNumeric(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	switch args[0].(type) {
@@ -18,7 +18,7 @@ func isNumeric(args ...interface{}) (interface{}, error) {
 }
 
 func isInt(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	conv, ok := args[0].(float64)
@@ -34,7 +34,7 @@ func isInt(args ...interface{}) (interface{}, error) {
 }
 
 func isBool(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	val := fmt.Sprintf("%v", args[0])
@@ -48,7 +48,7 @@ func isBool(args ...interface{}) (interface{}, error) {
 }
 
 func isString(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	tNum, _ := isNumeric(args[0])

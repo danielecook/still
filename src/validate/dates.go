@@ -10,7 +10,7 @@ import (
 )
 
 func isDate(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	// Checks for an element present in a set.
@@ -19,7 +19,7 @@ func isDate(args ...interface{}) (interface{}, error) {
 }
 
 func isDateRelaxed(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	// Checks for an element present in a set.
@@ -28,7 +28,7 @@ func isDateRelaxed(args ...interface{}) (interface{}, error) {
 }
 
 func isDateFormat(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	var format = strings.Replace(args[1].(string), "\\", "", -1)

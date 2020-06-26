@@ -7,10 +7,16 @@ import (
 )
 
 func is(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	return (bool)(args[0] == args[1]), nil
 }
 
 func not(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	return (bool)(args[0] != args[1]), nil
 }
 
@@ -26,5 +32,3 @@ func ifElse(args ...interface{}) (interface{}, error) {
 	}
 	return (interface{})(args[2].(interface{})), nil
 }
-
-// is NA, etc.???

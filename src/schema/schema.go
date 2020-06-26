@@ -30,8 +30,9 @@ type SchemaRules struct {
 	Fixed        bool
 	// Other
 	Comment  rune
-	Errors   int // count of schema-specific errors
-	NA       []string
+	Errors   int      // count of schema-specific errors
+	NA       []string // NA values
+	EMPTY    []string // empty values
 	YAMLData map[string]interface{}
 
 	// Columns
@@ -109,7 +110,10 @@ func ParseSchema(schemaFile string) SchemaRules {
 	}
 	defer file.Close()
 
-	var Schema = SchemaRules{}
+	var Schema = SchemaRules{
+		NA:    []string{"NA"},
+		EMPTY: []string{"NULL", ""},
+	}
 	var commentOpen = false
 	commentEnd, err := regexp.Compile("\\/\\/.*$")
 	utils.Check(err)
@@ -147,6 +151,8 @@ schema:
 				Schema.Separater = setSeparator(parseDirectiveValue(line))
 			case strings.HasPrefix(line, "@na_values"):
 				Schema.NA = parseDirectiveStrArray(line)
+			case strings.HasPrefix(line, "@empty_values"):
+				Schema.EMPTY = parseDirectiveStrArray(line)
 			case line == "@ordered":
 				Schema.CheckOrdered = true
 			case line == "@fixed":

@@ -218,7 +218,7 @@ Checks whether a value is date-like using strict criteria. `is_date` will fail o
 
 Checks whether a value is date-like with potential ambiguity. `02/03/2020` would pass.
 
-##### `is_date_format(format)`
+##### `is_date_format`
 
 Check whether a column matches a specified date format. Formats can be specified as any date like this:
 
@@ -249,7 +249,7 @@ collection_date: is_date_format("2020\\-02\\-10")
 
 Checks whether a file exists
 
-##### `file_min_size(fsize)`
+##### `file_min_size`
 
 Checks whether a file is a minimum size
 
@@ -259,10 +259,36 @@ photo: file_min_size("1MB")
 
 `fsize` is a size string such as `100 mb`, `1G`, or `500`.
 
-##### `mimetype(type)`
+##### `mimetype`
 
 Validates the mimetype for a given file. See [gabriel-vasile/mimetype](https://github.com/gabriel-vasile/mimetype/blob/master/supported_mimes.md) for available mimetypes.
 
 ```yaml
 photo: mimetype("image/jpeg")
+```
+
+#### Missing Data
+
+##### `is_na`
+
+Checks whether a value is `NA`. Use `!is_na()` to restrict the presence of `EMPTY` values.
+
+```yaml
+name: !is_na() # tests that no NA values exist
+```
+
+##### `is_empty`
+
+Checks whether a value is `EMPTY`. Use `!is_empty()` to restrict the presence of `EMPTY` values.
+
+```yaml
+name: !is_empty() # tests that no EMPTY values exist
+```
+
+##### `is_missing`
+
+Returns `true` if `is_na()` or `is_empty()` is true.
+
+```yaml
+name: !is_empty() # tests that no NA or EMPTY values exist
 ```
