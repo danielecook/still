@@ -94,7 +94,7 @@ func (c EMPTY) String() string {
 }
 
 // RunValidation
-func RunValidation(input string, schema schema.SchemaRules) bool {
+func RunValidation(schema schema.SchemaRules, input string) bool {
 
 	f, err := reader.NewReader(input, schema)
 	utils.Check(err)

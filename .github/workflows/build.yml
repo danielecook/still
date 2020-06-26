@@ -1,29 +1,21 @@
-  
 name: Build
 on: [push, pull_request]
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        include:
-          - os: ubuntu-latest
-            asset_name: still_linux
-          - os: windows-latest
-            asset_name: still.exe
-          - os: macos-latest
-            asset_name: still
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     steps:
+
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up environment
+        run: echo ::set-env name=VERSION_NUMBER::$(echo ${GITHUB_REF:10})
+
       - name: Set up Go 1.14
         uses: actions/setup-go@v2
         with:
           go-version: 1.14
-
-      - name: Check out code
-        uses: actions/checkout@v2
 
       - name: Download dependencies
         run: go mod download
@@ -31,19 +23,26 @@ jobs:
       - name: Run tests
         run: go test ./...
 
-      - name: Build
-        run: | 
-          go build -v
-      
-      - name: Move binary to correct location
-        if: matrix.os == 'ubuntu-latest'
-        run: mv still ${{ matrix.asset_name }}
+      - name: Build 
+        run: |
+          $HOME/go/bin/gox -ldflags "-X main.Version=$VERSION_NUMBER" \
+                           --output="$GOX_OUTPUT" \
+                           --osarch="$GOX_OSARCH" \
+                           github.com/$GITHUB_REPOSITORY/still
+        env:
+          GOX_OUTPUT: "./build/{{.OS}}/{{.Dir}}_{{.OS}}"
+          GOX_OSARCH: "linux/amd64 darwin/amd64 windows/amd64"
+
+      - name: Move macos binary name
+        run: |
+          mv still_darwin still
+          mv still_windows.exe still.exe
       
       - name: Upload Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: ${{ matrix.asset_name }}
-          path: ${{ matrix.asset_name }}
+          name: still
+          path: still*
 
       - name: Create Release
         id: create_release
@@ -57,13 +56,35 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload ${{ matrix.name }} Release Asset
+      - name: Upload MACOS binary
         uses: actions/upload-release-asset@v1.0.1
         if: contains(github.ref, 'tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ${{ matrix.asset_name }}
-          asset_name: ${{ matrix.asset_name }}
-          asset_content_type: application/octet-stream 
+          asset_path: still
+          asset_name: 'still (macos)'
+          asset_content_type: application/octet-stream
+
+      - name: Upload Linux Binary
+        uses: actions/upload-release-asset@v1.0.1
+        if: contains(github.ref, 'tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: still_linux
+          asset_name: 'still (linux)'
+          asset_content_type: application/octet-stream
+
+      - name: Upload Windows Binary
+        uses: actions/upload-release-asset@v1.0.1
+        if: contains(github.ref, 'tags/v')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: still.exe
+          asset_name: 'still.exe (windows)'
+          asset_content_type: application/octet-stream
