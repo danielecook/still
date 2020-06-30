@@ -173,6 +173,13 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 
 		for idx, col := range schema.Columns {
 			colIndex := indexOf(col.Name, colnames)
+
+			// Check to see if column exists
+			if colIndex == -1 {
+				// TODO: Add error for missing column / make optional?
+				continue
+			}
+
 			// Add in current column
 			currentVar := parameters[col.Name]
 			parameters["current_var_"] = currentVar
