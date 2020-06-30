@@ -2,6 +2,7 @@ package output
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/danielecook/still/src/schema"
@@ -12,6 +13,9 @@ type ValidCol struct {
 	Name    string
 	IsValid int // 0=not checked; 1=true; 2=false
 	NErrs   int
+	NNA     int // NA Count
+	NEMPTY  int // Empty Count
+	NVALID  int
 }
 
 func directiveLine(pass bool, name string) {
@@ -30,16 +34,39 @@ func directiveLine(pass bool, name string) {
 	}
 }
 
+func line() {
+	fmt.Println(strings.Repeat("-", 82))
+}
+
+const lineFormat = "%2s\t%-25s\t%7s\t%7s\t%7v\t%7v\n"
+
+func getField(s ValidCol, field string) int {
+	r := reflect.ValueOf(s)
+	f := reflect.Indirect(r).FieldByName(field)
+	return int(f.Int())
+}
+
+func sumField(columns []ValidCol, field string) int {
+	s := 0
+	for _, col := range columns {
+		s += getField(col, field)
+	}
+	return s
+}
+
 // PrintSummary - Prints result summary table
 func PrintSummary(validColSet []ValidCol, sch schema.SchemaRules) {
 	// Output header
-	fmt.Println(strings.Repeat("-", 50))
-	fmt.Println(
-		aurora.Sprintf(aurora.Bold("%2s\t%-30s\t%10s"),
+	line()
+	fmt.Printf(
+		aurora.Sprintf(aurora.Bold(lineFormat),
 			"✓",
 			"Check",
-			"Errors"))
-	fmt.Println(strings.Repeat("-", 50))
+			"NA",
+			"EMPTY",
+			"Errors",
+			"Valid"))
+	line()
 
 	if sch.CheckOrdered {
 		directiveLine(sch.Ordered, "@ordered")
@@ -48,47 +75,61 @@ func PrintSummary(validColSet []ValidCol, sch schema.SchemaRules) {
 		directiveLine(sch.Fixed, "@fixed")
 	}
 
-	fmt.Println(strings.Repeat("-", 50))
-
-	nPass := 0
-	nChecked := 0
+	line()
 	totalErrs := 0
 	var check aurora.Value
+	var na string
+	var empty string
+	var valid aurora.Value
 	var errs aurora.Value
 	for _, col := range validColSet {
 		if col.IsValid == 0 {
 			check = aurora.Reset("")
 			errs = aurora.Reset("")
-		} else if col.IsValid == 1 {
-			check = aurora.Bold(aurora.Green("✓"))
-			errs = aurora.Reset("0")
-			nPass++
-			nChecked++
-		} else if col.IsValid == 2 {
-			check = aurora.Bold(aurora.Red("𐄂"))
-			errs = aurora.Bold(aurora.Red(col.NErrs))
-			nChecked++
-			totalErrs += col.NErrs
+			na = ""
+			empty = ""
+			valid = aurora.Reset("")
+		} else if col.IsValid >= 1 {
+			na = fmt.Sprintf("%d", col.NNA)
+			empty = fmt.Sprintf("%d", col.NEMPTY)
+			valid = aurora.Green(fmt.Sprintf("%d", col.NVALID))
+			if col.IsValid == 1 {
+				check = aurora.Bold(aurora.Green("✓"))
+				errs = aurora.Green("0")
+			} else if col.IsValid == 2 {
+				check = aurora.Bold(aurora.Red("𐄂"))
+				errs = aurora.Bold(aurora.Red(col.NErrs))
+				totalErrs += col.NErrs
+			}
 		}
-		fmt.Printf("%2s\t%-30s\t%10v\n",
+		fmt.Printf(lineFormat,
 			check,
 			col.Name,
-			errs)
+			na,
+			empty,
+			errs,
+			valid)
 	}
 
 	// Summary Line
-	fmt.Printf("%s\n", strings.Repeat("-", 50))
+	line()
+	var status aurora.Value
+	na = fmt.Sprintf("%d", sumField(validColSet, "NNA"))
+	empty = fmt.Sprintf("%d", sumField(validColSet, "NEMPTY"))
+	valid = aurora.Green(fmt.Sprintf("%d", sumField(validColSet, "NVALID")))
 	if totalErrs == 0 && sch.Errors == 0 {
-		fmt.Printf("%2s\t%-40s\t%10v\n",
-			aurora.Bold(aurora.Green("✓")),
-			fmt.Sprintf("%-4v",
-				aurora.Green("PASS")),
-			aurora.Green(totalErrs))
+		check = aurora.Bold(aurora.Green("✓"))
+		status = aurora.Green("PASS")
 	} else {
-		fmt.Printf("%2s\t%-40s\t%10v\n",
-			aurora.Bold(aurora.Red("𐄂")),
-			fmt.Sprintf("%-4v",
-				aurora.Red("FAIL")),
-			aurora.Red(totalErrs))
+		check = aurora.Bold(aurora.Red("𐄂"))
+		status = aurora.Red("FAIL")
 	}
+	fmt.Printf(lineFormat,
+		check,
+		status,
+		na,
+		empty,
+		aurora.Red(sumField(validColSet, "NErrs")),
+		valid,
+	)
 }

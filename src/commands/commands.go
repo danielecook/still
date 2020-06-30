@@ -11,11 +11,12 @@ import (
 )
 
 // Run - Entrypoint
-func Run() {
+func Run(Version string) {
 
 	app := cli.NewApp()
 	app.Name = "Still"
 	app.Usage = "Validate CSV, TSV, and Excel data"
+	app.Version = Version
 
 	app.Authors = []*cli.Author{
 		{
@@ -41,7 +42,7 @@ func Run() {
 				input := c.Args().Get(1)
 				useSchema := schema.ParseSchema(schemaFname)
 				// Rev direction of params
-				result := validate.RunValidation(input, useSchema)
+				result := validate.RunValidation(useSchema, input)
 				if result == false {
 					os.Exit(1)
 				} else {

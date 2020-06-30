@@ -12,7 +12,9 @@ Directives are assigned using a `@` prefix and apply global settings.
 
 ### `@na_values`
 
-Use `@na_values` to specify values to treat as `NA`. See [Handling Missing Data](### Handling missing data) for more details.
+Use `@na_values` to specify values to treat as `NA`. See [Missing Data](#missing_data) for more details.
+
+__Default__
 
 ```yaml
 @na_values NA
@@ -20,9 +22,11 @@ Use `@na_values` to specify values to treat as `NA`. See [Handling Missing Data]
 
 ### `@empty_values`
 
-Use `@empty_values` to specify values to treat as `empty`.
+Use `@empty_values` to specify values to treat as `EMPTY`.
 
-Values to treat as missing or `NA`. Use `""` for empty cells. See [Handling Missing Data](### Handling missing data) for more details.
+Use `""` for empty cells. See [Missing Data](#missing_data) for more details.
+
+__Default__
 
 ```yaml
 @empty_values "" NULL
@@ -97,20 +101,9 @@ flavor: any(flavor_values)
 
 ## Missing Data
 
-There are two types of missing data that `still` manages: 
+There are two types of missing data that `still` manages for additional flexibility. However, you can choose to treat all missing data as NA if desired. `NA` values represent "known" missing data. These are similar to `NA` values in R. `EMPTY` can be considered "unknown" missing data
 
-### `empty`
-
-`empty` data indicate missing data that may exist, but is currently unknown. This is similar to the `NULL` type in R. By default, `empty` values are defined as `""`.
-
-### `NA`
-
-`NA` values indicate known missing data. This is similar to the `NA` type in R. By default, `NA` values are defined as `NA`.
-
-### Handling missing data
-
-The difference between `NA` and `empty` is important for data validation purposes. There are cases where you might permit `empty` data, but not `NA` or vice versa. `@na_values` and `@empty_values` can be used to set values treated as `NA` and `empty`, respectively.
-
+To clarify further, consider a dataset on cars. The column `mpg` for all-electric vehicles would be labeled `NA` ("not applicable") as it does not apply. Another scenerio might be that you know the `name`, `make`, and `mpg` of a new vehicle but not the `color`. This flexibility would allow you to throw an error with an `NA` value for color, but not for an `EMPTY` value.
 
 ## Comments
 

@@ -1,7 +1,10 @@
 package validate
 
 func isPositive(args ...interface{}) (interface{}, error) {
-	// Checks for an element present in a set.
+	// Checks for an element present in a set
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	if val, ok := args[0].(float64); ok {
 		return (bool)(val > 0), nil
 	}
@@ -9,7 +12,10 @@ func isPositive(args ...interface{}) (interface{}, error) {
 }
 
 func isNegative(args ...interface{}) (interface{}, error) {
-	// Checks for an element present in a set.
+	// Checks for an element present in a set
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	if val, ok := args[0].(float64); ok {
 		return (bool)(val < 0), nil
 	}
@@ -17,15 +23,15 @@ func isNegative(args ...interface{}) (interface{}, error) {
 }
 
 func rangeFunc(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	var between bool
 	switch val := args[0].(type) {
-	case nil:
-		return (bool)(true), nil
 	case float64:
 		between = args[1].(float64) <= val && val <= args[2].(float64)
+	default:
+		return (bool)(false), nil
 	}
 	val := args[0].(float64)
 	between = args[1].(float64) <= val && val <= args[2].(float64)

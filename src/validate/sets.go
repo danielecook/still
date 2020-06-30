@@ -7,7 +7,7 @@ import (
 )
 
 func any(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	// Checks for an element present in a set.
@@ -15,13 +15,29 @@ func any(args ...interface{}) (interface{}, error) {
 		subVal, ok := val.([]interface{})
 		if ok {
 			for _, i := range subVal {
-				if args[0] == i {
-					return (bool)(true), nil
+				switch v := i.(type) {
+				// Handle integer comparison cases
+				case int:
+					if int64(args[0].(float64)) == int64(v) {
+						return (bool)(true), nil
+					}
+				default:
+					if args[0] == i {
+						return (bool)(true), nil
+					}
 				}
 			}
 		}
-		if args[0] == val {
-			return (bool)(true), nil
+		switch v := args[0].(type) {
+		// Handle integer comparison cases
+		case int:
+			if int64(args[0].(float64)) == int64(v) {
+				return (bool)(true), nil
+			}
+		default:
+			if args[0] == val {
+				return (bool)(true), nil
+			}
 		}
 	}
 	return (bool)(false), nil
@@ -33,7 +49,6 @@ func any(args ...interface{}) (interface{}, error) {
 var uniqueMap = map[string]map[string]int{}
 
 func digestArgs(args ...interface{}) string {
-
 	h := sha1.New()
 	return string(h.Sum([]byte(fmt.Sprintf("%v", args))))
 }
@@ -62,16 +77,8 @@ func stringInSlice(a string, list []string) bool {
 	return false
 }
 
-func isNA(args ...interface{}) bool {
-	_, ok := args[0].(NA)
-	if ok {
-		return true
-	}
-	return false
-}
-
 func isSubsetList(args ...interface{}) (interface{}, error) {
-	if isNA(args[0]) {
+	if m, _ := isMissing(args[0]); m.(bool) {
 		return (bool)(true), nil
 	}
 	testVals := strings.Split(args[0].(string), ",")

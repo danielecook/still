@@ -11,7 +11,7 @@ import (
 )
 
 func print(args ...interface{}) (interface{}, error) {
-	fmt.Println(args)
+	fmt.Println(args...)
 	return (bool)(true), nil
 }
 
@@ -83,3 +83,7 @@ func replace(args ...interface{}) (interface{}, error) {
 // replace
 
 // coalesce
+
+/*
+	Missing Data
+*/

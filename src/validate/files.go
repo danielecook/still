@@ -10,6 +10,9 @@ import (
 
 func fileExists(args ...interface{}) (interface{}, error) {
 	// Checks for an element present in a set.
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	if _, err := os.Stat(args[0].(string)); err == nil || os.IsExist(err) {
 		return (bool)(true), nil
 	}
@@ -25,6 +28,9 @@ func parseSize(s string) int64 {
 
 func fileMinSize(args ...interface{}) (interface{}, error) {
 	// Checks for file greater than a given size
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	if stat, err := os.Stat(args[0].(string)); err == nil || os.IsExist(err) {
 		if stat.Size() >= parseSize(args[1].(string)) {
 			return (bool)(true), nil
@@ -35,6 +41,9 @@ func fileMinSize(args ...interface{}) (interface{}, error) {
 
 func fileMaxSize(args ...interface{}) (interface{}, error) {
 	// Checks for file greater than a given size
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	if stat, err := os.Stat(args[0].(string)); err == nil || os.IsExist(err) {
 		if stat.Size() <= parseSize(args[1].(string)) {
 			return (bool)(true), nil
@@ -44,6 +53,9 @@ func fileMaxSize(args ...interface{}) (interface{}, error) {
 }
 
 func mimeTypeIs(args ...interface{}) (interface{}, error) {
+	if m, _ := isMissing(args[0]); m.(bool) {
+		return (bool)(true), nil
+	}
 	mime, err := mimetype.DetectFile(args[0].(string))
 	utils.Check(err)
 	return (bool)(mime.String() == args[1].(string)), nil
