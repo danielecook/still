@@ -15,13 +15,29 @@ func any(args ...interface{}) (interface{}, error) {
 		subVal, ok := val.([]interface{})
 		if ok {
 			for _, i := range subVal {
-				if args[0] == i {
-					return (bool)(true), nil
+				switch v := i.(type) {
+				// Handle integer comparison cases
+				case int:
+					if int64(args[0].(float64)) == int64(v) {
+						return (bool)(true), nil
+					}
+				default:
+					if args[0] == i {
+						return (bool)(true), nil
+					}
 				}
 			}
 		}
-		if args[0] == val {
-			return (bool)(true), nil
+		switch v := args[0].(type) {
+		// Handle integer comparison cases
+		case int:
+			if int64(args[0].(float64)) == int64(v) {
+				return (bool)(true), nil
+			}
+		default:
+			if args[0] == val {
+				return (bool)(true), nil
+			}
 		}
 	}
 	return (bool)(false), nil
