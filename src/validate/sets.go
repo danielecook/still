@@ -93,6 +93,8 @@ func isSubsetList(args ...interface{}) (interface{}, error) {
 		}
 	}
 	for _, i := range testVals {
+		// Allow for comma-delimited list
+		i = strings.Trim(i, " ")
 		if stringInSlice(i, okVals) == false {
 			return (bool)(false), nil
 		}

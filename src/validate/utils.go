@@ -36,17 +36,17 @@ func indexOf(word string, data []string) int {
 	return -1
 }
 
-func typeConvert(val string, NA_vals []string, EMPTY_vals []string) interface{} {
+func typeConvert(val string, NaVals []string, EmptyVals []string) interface{} {
 	/*
 		Automatically converts types
 	*/
-	for _, na := range NA_vals {
+	for _, na := range NaVals {
 		if val == na {
 			return NA(na)
 		}
 	}
 
-	for _, empty := range EMPTY_vals {
+	for _, empty := range EmptyVals {
 		if val == empty {
 			return EMPTY(empty)
 		}

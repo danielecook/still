@@ -54,35 +54,8 @@ func sumField(columns []schema.Col, field string) int {
 	return s
 }
 
-// PrintSummary - Prints result summary table
-func PrintSummary(colnames []string, sch schema.SchemaRules) {
-	// Output header
-	line()
-	fmt.Printf(
-		aurora.Sprintf(aurora.Bold(lineFormat),
-			"✓",
-			"Check",
-			"NA",
-			"EMPTY",
-			"Errors",
-			"Valid"))
-	line()
-
-	if sch.CheckOrdered {
-		directiveLine(sch.Ordered, "@ordered")
-	}
-	if sch.CheckFixed {
-		directiveLine(sch.Fixed, "@fixed")
-	}
-
-	// Allow for sorting by DATA or SCHEMA
+func setColOrder(sch schema.SchemaRules, ColSet map[string]schema.Col, colnames []string) []string {
 	var colOrder []string
-	// Restructure columns into hash map
-	ColSet := make(map[string]schema.Col)
-	for _, col := range sch.Columns {
-		ColSet[col.Name] = col
-	}
-
 	if sch.OutputOrder == "schema" {
 		colOrder = make([]string, len(sch.Columns))
 		// Order columns by schema
@@ -106,6 +79,36 @@ func PrintSummary(colnames []string, sch schema.SchemaRules) {
 			}
 		}
 	}
+	return colOrder
+}
+
+// PrintSummary - Prints result summary table
+func PrintSummary(colnames []string, sch schema.SchemaRules) {
+	// Output header
+	line()
+	fmt.Printf(
+		aurora.Sprintf(aurora.Bold(lineFormat),
+			"✓",
+			"Check",
+			"NA",
+			"EMPTY",
+			"Errors",
+			"Valid"))
+	line()
+	if sch.CheckOrdered {
+		directiveLine(sch.Ordered, "@ordered")
+	}
+	if sch.CheckFixed {
+		directiveLine(sch.Fixed, "@fixed")
+	}
+
+	// Restructure columns into hash map
+	ColSet := make(map[string]schema.Col)
+	for _, col := range sch.Columns {
+		ColSet[col.Name] = col
+	}
+
+	colOrder := setColOrder(sch, ColSet, colnames)
 
 	line()
 	totalErrs := 0
@@ -146,8 +149,8 @@ func PrintSummary(colnames []string, sch schema.SchemaRules) {
 				totalErrs += col.NErrs
 			} else if col.Status == 3 {
 				// Missing
-				colName = aurora.Gray(15, fmt.Sprintf("%s [missing in data]", col.Name))
-				check = aurora.Bold(aurora.Red("𐄂"))
+				colName = aurora.Gray(15, fmt.Sprintf("%s", col.Name))
+				check = aurora.Bold(aurora.Red("?"))
 				errs = aurora.Reset("")
 				na = ""
 				empty = ""

@@ -17,6 +17,7 @@ nav:
     - Schema: schema.md
     - Column Rules: column-rules.md
     - Functions: functions.md
+    - Validate: validate.md
 
 
 extra_css:

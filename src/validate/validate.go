@@ -113,7 +113,7 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 	for idx, col := range schema.Columns {
 
 		// Allow for explcit references by removing them initialy
-		explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[,]?", funcSet, col.Name))
+		explicitReplace, err := regexp.Compile(fmt.Sprintf("(%s)\\([ ]?%s[ ,)]", funcSet, col.Name))
 		rule = explicitReplace.ReplaceAllString(col.Rule, "$1(")
 
 		// Add implicit variables; Remove trailing commas
