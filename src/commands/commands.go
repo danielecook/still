@@ -41,6 +41,7 @@ func Run(Version string) {
 				schemaFname := c.Args().Get(0)
 				input := c.Args().Get(1)
 				useSchema := schema.ParseSchema(schemaFname)
+				useSchema.OutputOrder = c.String("order")
 				// Rev direction of params
 				result := validate.RunValidation(useSchema, input)
 				if result == false {
@@ -49,6 +50,20 @@ func Run(Version string) {
 					os.Exit(0)
 				}
 				return nil
+			},
+			Flags: []cli.Flag{
+				&cli.StringFlag{
+					Name:     "yaml",
+					Usage:    "Specify YAML Provider",
+					Required: false,
+				},
+				&cli.StringFlag{
+					Name:     "order",
+					Aliases:  []string{"o"},
+					Value:    "data",
+					Usage:    "Order output by data or schema",
+					Required: false,
+				},
 			},
 		},
 	}

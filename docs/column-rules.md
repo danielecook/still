@@ -1,21 +1,21 @@
-# Expressions
+# Column Rules
 
-### Background
+## Introduction
 
-Expressions all return a boolean (true/false) and allow you to evaluate conditions on a column. For brevity, test functions are implicitely passed the column being evaluated as the first argument. For example:
+Column rules consist of the rule and a test expression. All test expressions return a boolean (true/false) and allow you to evaluate conditions on a column. For brevity, test expressions are implicitely passed the column being evaluated as the first argument. For example:
 
 ```yaml
-status: contains("# NOTE")
+# Column --> Status; Testing for a value containing '# NOTE'
+status: is("fail")
 # Converted to:
-status: contains(status, "# NOTE")
+status: is(status, "fail")
 ```
 
 You can still be explicit when referencing the column of interest, and you can also combine test functions using different columns:
 
 ```yaml
-status: contains("# NOTE") && contains(color, "red")
-# Converted to:
-status: contains(status, "# NOTE") && contains(time, "# NOTE")
+# Check that a failure reason is provided for missing data.
+status: is(status, "fail") && !is_missing(reason)
 ```
 
 ### Operators
@@ -35,9 +35,7 @@ status: contains(status, "# NOTE") && contains(time, "# NOTE")
 * Ternary conditional: `?` `:`
 * Null coalescence: `??`
 
-#### Dates
-
-Single quoted dates are parsed...
+Dates are parsed when specified as single quotes.
 
 ### Basic
 
@@ -292,3 +290,14 @@ Returns `true` if `is_na()` or `is_empty()` is true.
 ```yaml
 name: !is_empty() # tests that no NA or EMPTY values exist
 ```
+
+## Providers
+
+Providers allow you to specify arguments in test expressions from an external data source. For example, if you want to restrict 
+
+### Schema YAML
+
+You can append YAML data to the end of a `.still` datafile. See [Schmema YAML Data](schema/#yaml_data) for more details.
+
+### YAML File
+

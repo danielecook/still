@@ -81,6 +81,5 @@ func NewReader(fname string, schema schema.SchemaRules) (FileReader, error) {
 	case isSpreadsheet(mime.String()):
 		return excelReader.NewExcel(fname, schema), nil
 	}
-	fmt.Println(mime.String())
 	return nil, fmt.Errorf("file type %s is not defined", fname)
 }

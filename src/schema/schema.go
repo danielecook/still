@@ -13,10 +13,29 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// Define the column status
+type Status int
+
+const (
+	notChecked Status = iota
+	valid
+	invalid
+)
+
+func (s Status) String() string {
+	return [...]string{"not checked", "valid", "invalid", "missing"}[s]
+}
+
 type Col struct {
 	Name        string
 	Rule        string
 	Description string
+	Status      Status
+
+	NErrs  int
+	NNA    int
+	NEMPTY int
+	NVALID int
 }
 
 type SchemaRules struct {
@@ -28,6 +47,7 @@ type SchemaRules struct {
 	Ordered      bool
 	CheckFixed   bool
 	Fixed        bool
+	ExtraCols    []string
 	// Other
 	Comment  rune
 	Errors   int      // count of schema-specific errors
@@ -37,6 +57,9 @@ type SchemaRules struct {
 
 	// Columns
 	Columns []Col
+
+	// Output configuration
+	OutputOrder string // by data input or by schema
 }
 
 func parseDirectiveValue(line string) string {

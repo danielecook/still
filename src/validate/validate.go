@@ -94,15 +94,8 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 	utils.Check(err)
 
 	// Set all columns as valid or nil to start
-	ColumnStatus := make([]output.ValidCol, len(colnames))
-	for k := range colnames {
-		ColumnStatus[k].Name = colnames[k]
-		ColumnStatus[k].IsValid = 0
-		for _, schemaCol := range schema.Columns {
-			if schemaCol.Name == ColumnStatus[k].Name {
-				ColumnStatus[k].IsValid = 1
-			}
-		}
+	for idx := range schema.Columns {
+		schema.Columns[idx].Status = 1 // 1=VALID
 	}
 
 	/*
@@ -176,7 +169,7 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 
 			// Check to see if column exists
 			if colIndex == -1 {
-				// TODO: Add error for missing column / make optional?
+				schema.Columns[idx].Status = 3
 				continue
 			}
 
@@ -188,17 +181,17 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 
 			// Column Summary
 			if na, _ := isNA(currentVar); na.(bool) {
-				ColumnStatus[colIndex].NNA++
+				schema.Columns[idx].NNA++
 			} else if empty, _ := isEMPTY(currentVar); empty.(bool) {
-				ColumnStatus[colIndex].NEMPTY++
+				schema.Columns[idx].NEMPTY++
 			} else if result == true {
-				ColumnStatus[colIndex].NVALID++
+				schema.Columns[idx].NVALID++
 			}
 
 			// Log results
 			if result == false {
-				ColumnStatus[colIndex].IsValid = 2
-				ColumnStatus[colIndex].NErrs++
+				schema.Columns[idx].Status = 2
+				schema.Columns[idx].NErrs++
 
 				var infoLine string
 				if exprError != nil {
@@ -217,14 +210,12 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 						aurora.Blue(infoLine)))
 			}
 		}
-
 	}
+	output.PrintSummary(colnames, schema)
 
-	output.PrintSummary(ColumnStatus, schema)
-
-	// Fail if any single column fails
-	for _, i := range ColumnStatus {
-		if i.IsValid == 2 {
+	// Fail if any single column fails or schema has failed
+	for _, col := range schema.Columns {
+		if col.Status == 2 {
 			return false
 		}
 	}
