@@ -33,6 +33,9 @@ var utilFunctions = map[string]govaluate.ExpressionFunction{
 	"replace":  replace,
 	// Cumulative
 	"last": last,
+	// two-pass
+	"group_count":      groupCountFunc,
+	"group_count_eval": groupCountFuncEval,
 }
 
 // Define functions
@@ -84,6 +87,11 @@ var keyFunctions = []string{
 	"last",
 }
 
+// Functions that result in the file being read 2x, and data stored
+var twoPassFunctions = []string{
+	"group_count",
+}
+
 // RunValidation
 func RunValidation(schema schema.SchemaRules, input string) bool {
 
@@ -110,6 +118,28 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 	schema.IsOrdered(colnames)
 	schema.IsFixed(colnames)
 
+	// Compile search functions
+	funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
+	utils.Check(err)
+
+	// Key Functions - Require a hashed first element
+	// All twoPassFunctions are also key functions
+	keyFunctions = append(keyFunctions, twoPassFunctions...)
+
+	// Used to match keyFunctions
+	keyMatch, err := regexp.Compile(fmt.Sprintf("(%s)", strings.Join(keyFunctions, "|")))
+	utils.Check(err)
+
+	// Used to detect two pass functions
+	twoPassMatchFull, err := regexp.Compile(fmt.Sprintf("(%s)(\\([^)]+\\))", strings.Join(twoPassFunctions, "|")))
+	utils.Check(err)
+
+	twoPassExpr := make(map[string][]*govaluate.EvaluableExpression)
+	twoPassStub := make(map[string][]string)
+
+	/*
+		Format rules, passing implicit columns
+	*/
 	for idx, col := range schema.Columns {
 
 		// Allow for explcit references by removing them initialy
@@ -117,20 +147,44 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 		rule = explicitReplace.ReplaceAllString(col.Rule, "$1(")
 
 		// Add implicit variables; Remove trailing commas
-		funcMatch, err := regexp.Compile(fmt.Sprintf("(%s)\\(", funcSet))
-		utils.Check(err)
 		rule = funcMatch.ReplaceAllString(rule, "$1(current_var_,")
 		rule = strings.Replace(rule, ",)", ")", -1)
 
-		// Key functions require the variable name to create a key
-		keyFunc, err := regexp.Compile(fmt.Sprintf("(%s)\\(([^)]+)", strings.Join(keyFunctions, "|")))
-		utils.Check(err)
-		rule = keyFunc.ReplaceAllString(rule, fmt.Sprintf("$1(\"%s:$2\",$2", col.Name))
+		// Add hash keys for certain functions
+		// These need a stub for results to be function-specific
+		var stub string
+		idxOffset := 0
+		twoPassIdx := keyMatch.FindAllStringIndex(rule, -1)
+		twoPassFuncs := keyMatch.FindAllString(rule, -1)
+		for idx := range twoPassIdx {
+			stub = utils.StringHash(fmt.Sprintf("%d-%s", twoPassIdx[idx], twoPassFuncs[idx]))
+			// Modify rule to insert hash
+			start := twoPassIdx[idx][0] + idxOffset + len(twoPassFuncs[idx]) + 1 // + 1 for '('
+			rule = fmt.Sprintf("%s\"%s\",%s", rule[:start], stub, rule[start:])
+			idxOffset = idxOffset + len(stub) + 3 // For two " and ,
+		}
+
+		// Add two pass expressions to be evaluated individually
+		twoPassMatch := twoPassMatchFull.FindAllString(rule, -1)
+		if len(twoPassMatch) > 0 {
+			twoPassExpr[col.Name] = make([]*govaluate.EvaluableExpression, len(twoPassMatch))
+			twoPassStub[col.Name] = make([]string, len(twoPassMatch))
+			for idx, expr := range twoPassMatch {
+				expr, err := govaluate.NewEvaluableExpressionWithFunctions(expr, functions)
+				utils.Check(err)
+				twoPassExpr[col.Name][idx] = expr
+				twoPassStub[col.Name][idx] = stub
+			}
+		}
+
+		// Convert two-pass functions to their 2nd pass version
+		rule = twoPassMatchFull.ReplaceAllString(rule, "${1}_eval$2")
 
 		// If no expression is supplied set to true
 		if rule == "" {
 			rule = "true"
 		}
+
 		// Parse expressions
 		expr, err := govaluate.NewEvaluableExpressionWithFunctions(rule, functions)
 		if err != nil {
@@ -149,7 +203,46 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 	parameters["false"] = false
 	parameters["data_"] = schema.YAMLData
 
+	// If two-pass functions are used, evaluate those here
+	// first, and then replace with second pass function.
 	stopRead := false
+	if len(twoPassExpr) > 0 {
+		fmt.Println(
+			aurora.Yellow("Two-pass functions are being used"))
+		for ok := true; ok; ok = (stopRead == false) {
+			record, readErr := f.Read()
+			if readErr == io.EOF {
+				stopRead = true
+				break
+			}
+			for idx := range record {
+				parameters[colnames[idx]] = typeConvert(record[idx], schema.NA, schema.EMPTY)
+			}
+
+			for colName, exprs := range twoPassExpr {
+				currentVar := parameters[colName]
+				parameters["current_var_"] = currentVar
+				for idx, expr := range exprs {
+					result, err := expr.Eval(parameters)
+					utils.Check(err)
+
+					// Add result to parameters
+					// TODO: See if there is a way to set parameter at end
+					// instead of at ever iteration of loop
+					parameters[twoPassStub[colName][idx]] = result
+				}
+			}
+		}
+
+		// Update twoPass expressions to evaluate versions
+
+		f, err = reader.NewReader(input, schema)
+		f.ReadHeader()
+	}
+
+	utils.Check(err)
+
+	stopRead = false
 	for ok := true; ok; ok = (stopRead == false) {
 		record, readErr := f.Read()
 		if readErr == io.EOF {

@@ -41,3 +41,7 @@ func (r *excelReader) Read() (row []string, err error) {
 func (r *excelReader) Row() int {
 	return r.currentRow
 }
+
+func (r *excelReader) Reset() {
+	r.currentRow = 0
+}

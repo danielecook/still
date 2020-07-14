@@ -8,6 +8,7 @@
 currency: any(great)
 letters: is_subset_list("A,B,C", ",") && !is_missing()
 identical_col: identical()
+extra: any("A", "B")
 ---
 great_values:
   - SZL

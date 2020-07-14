@@ -12,7 +12,7 @@ import (
 
 func print(args ...interface{}) (interface{}, error) {
 	fmt.Println(args...)
-	return (bool)(true), nil
+	return ([]interface{})(args), nil
 }
 
 func strLen(args ...interface{}) (interface{}, error) {

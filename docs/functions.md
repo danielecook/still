@@ -73,3 +73,30 @@ configuration: count(color, size) <= 10 # Fails if the combination of values is 
 (colname ?? 1) == 1 # returns TRUE if colname==NA/nil
 ```
 
+## Two-Pass Functions
+
+Two-pass functions allow for more advanced expressions to be evaluated, but they require a first-pass through the file to collect information.
+
+##### `group_count`
+
+```
+group_count(group_column, count_column, eq_value)
+```
+
+`group_count` will group data by the `group_column`, and count the number of occurences of `eq_value` in the `count_column`.
+
+__example__
+
+```
+family_id: is_int()
+person: group_count(person, is_head_of_household, true) == 1
+is_head_of_household: is_bool()
+```
+
+In the example above, we are checking to see that only one person in a family is set to `true` for the column `is_head_of_household`. If you have missing data in your grouping column you may need use an if_else statement to conditionally validate a row as true:
+
+```
+family_id: is_int()
+person: if_else(is_missing(), true, group_count(person, is_head_of_household, true) == 1)
+is_head_of_household: is_bool()
+```
