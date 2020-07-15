@@ -5,6 +5,9 @@
 @separater TAB
 @na_values NA
 @fixed
+name: !is_missing()
+job: !is_missing()
+gene: 
 currency: any(great)
 letters: is_subset_list("A,B,C", ",") && !is_missing()
 identical_col: identical()

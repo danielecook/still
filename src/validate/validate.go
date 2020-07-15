@@ -223,8 +223,9 @@ func RunValidation(schema schema.SchemaRules, input string) bool {
 				currentVar := parameters[colName]
 				parameters["current_var_"] = currentVar
 				for idx, expr := range exprs {
-					result, err := expr.Eval(parameters)
-					utils.Check(err)
+					result, _ := expr.Eval(parameters)
+					// We are skipping this error check b/c it
+					// takes place below.
 
 					// Add result to parameters
 					// TODO: See if there is a way to set parameter at end
