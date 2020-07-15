@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Column Rules - still</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  <link href="../styles.css" rel="stylesheet" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Column Rules";
+    var mkdocs_page_input_path = "column-rules.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> still</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Still</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../getting-started/">Getting Started</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../schema/">Schema</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Column Rules</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#operators">Operators</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#basic">Basic</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#is">is</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#not">not</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#sets">Sets</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#any">any</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#unique">unique</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#identical">identical</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#is_subset_list">is_subset_list</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#numbers">Numbers</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#range">range</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#is_positive">is_positive</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#is_negative">is_negative</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#strings">Strings</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#contains">contains</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#regex">regex</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#uppercase">uppercase</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#lowercase">lowercase</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#length">length</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#is_url">is_url</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#types">Types</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#dates">Dates</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#files">Files</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#missing_data">Missing Data</a>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#providers">Providers</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#schema_yaml">Schema YAML</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#yaml_file">YAML File</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../functions/">Functions</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../validate/">Validate</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">still</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Column Rules</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/danielecook/still/edit/master/docs/column-rules.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="column_rules">Column Rules<a class="headerlink" href="#column_rules" title="Permanent link">&para;</a></h1>
+<h2 id="introduction">Introduction<a class="headerlink" href="#introduction" title="Permanent link">&para;</a></h2>
+<p>Column rules consist of the rule and a test expression. All test expressions return a boolean (true/false) and allow you to evaluate conditions on a column. For brevity, test expressions are implicitely passed the column being evaluated as the first argument. For example:</p>
+<pre><code class="yaml"># Column --&gt; Status; Testing for a value containing '# NOTE'
+status: is(&quot;fail&quot;)
+# Converted to:
+status: is(status, &quot;fail&quot;)
+</code></pre>
+
+<p>You can still be explicit when referencing the column of interest, and you can also combine test functions using different columns:</p>
+<pre><code class="yaml"># Check that a failure reason is provided for missing data.
+status: is(status, &quot;fail&quot;) &amp;&amp; !is_missing(reason)
+</code></pre>
+
+<h3 id="operators">Operators<a class="headerlink" href="#operators" title="Permanent link">&para;</a></h3>
+<p><code>still</code> uses <a href="https://github.com/Knetic/govaluate">Knetic/govaluate</a> to evaluate expressions. See <a href="https://github.com/Knetic/govaluate/blob/master/MANUAL.md">the manual</a> for more detail on operators. The following operators are supported.</p>
+<ul>
+<li>Modifiers: <code>+</code> <code>-</code> <code>/</code> <code>*</code> <code>&amp;</code> <code>|</code> <code>^</code> <code>**</code> <code>%</code> <code>&gt;&gt;</code> <code>&lt;&lt;</code></li>
+<li>Comparators: <code>&gt;</code> <code>&gt;=</code> <code>&lt;</code> <code>&lt;=</code> <code>==</code> <code>!=</code> <code>=~</code> <code>!~</code></li>
+<li>Logical ops: <code>||</code> <code>&amp;&amp;</code></li>
+<li>Numeric constants, as 64-bit floating point (<code>12345.678</code>)</li>
+<li>String constants (single quotes: <code>'foobar'</code>)</li>
+<li>Date constants (<strong>single quotes</strong>, using any RFC3339, ISO8601, ruby date, or unix date; date parsing is automatically tried with any string constant)</li>
+<li>Boolean constants: <code>true</code> <code>false</code></li>
+<li>Parenthesis to control order of evaluation <code>(</code> <code>)</code></li>
+<li>Arrays (anything separated by <code>,</code> within parenthesis: <code>(1, 2, 'foo')</code>)</li>
+<li>Prefixes: <code>!</code> <code>-</code> <code>~</code></li>
+<li>Ternary conditional: <code>?</code> <code>:</code></li>
+<li>Null coalescence: <code>??</code></li>
+</ul>
+<p>Dates are parsed when specified as single quotes.</p>
+<h3 id="basic">Basic<a class="headerlink" href="#basic" title="Permanent link">&para;</a></h3>
+<h5 id="is"><code>is</code><a class="headerlink" href="#is" title="Permanent link">&para;</a></h5>
+<p>Tests whether a value matches.</p>
+<pre><code class="yaml">color: is(&quot;red&quot;)
+</code></pre>
+
+<h5 id="not"><code>not</code><a class="headerlink" href="#not" title="Permanent link">&para;</a></h5>
+<p>Tests whether a value does not match.</p>
+<pre><code class="yaml">is_passed: not(&quot;fail&quot;)
+</code></pre>
+
+<h3 id="sets">Sets<a class="headerlink" href="#sets" title="Permanent link">&para;</a></h3>
+<h5 id="any"><code>any</code><a class="headerlink" href="#any" title="Permanent link">&para;</a></h5>
+<p>Tests whether a value matches any of passed arguments.</p>
+<pre><code class="yaml">color: any(&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;)
+color: any(provider)
+</code></pre>
+
+<p>You can also use an array with the <code>IN</code> operator, but you must specify the column name:</p>
+<pre><code class="yaml">color: color IN (&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;)
+</code></pre>
+
+<h5 id="unique"><code>unique</code><a class="headerlink" href="#unique" title="Permanent link">&para;</a></h5>
+<p>Tests whether a column is unique.</p>
+<pre><code class="yaml">items: unique()
+# You can also test that a set of columns are unique.
+color: unique(size, weight) # remember that color is implicit
+</code></pre>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code>unique</code> does not work well on large datasets. It stores a hash digest of the arguments to test for uniqueness.</p>
+</div>
+<h5 id="identical"><code>identical</code><a class="headerlink" href="#identical" title="Permanent link">&para;</a></h5>
+<p>Tests whether all values of a column are identical.</p>
+<pre><code class="yaml">dataset_id: identical()
+</code></pre>
+
+<h5 id="is_subset_list"><code>is_subset_list</code><a class="headerlink" href="#is_subset_list" title="Permanent link">&para;</a></h5>
+<pre><code>is_subset_list(group_set, column_delimiter)
+</code></pre>
+
+<ul>
+<li><code>group_set</code> - A comma-delimited set of values.</li>
+<li><code>column_delimiter</code> - The delimiter for the specified column you are testing.</li>
+</ul>
+<p>Tests whether a delimited list (nested data) is a subset of the specified delimited list. For example:</p>
+<pre><code>letters: is_subset_list(&quot;A,B,C&quot;, &quot;,&quot;) # If letters='A,B' --&gt; TRUE
+letters: is_subset_list(&quot;A,C&quot;, &quot;,&quot;)   # If letters='A'B' --&gt; FALSE
+</code></pre>
+
+<h3 id="numbers">Numbers<a class="headerlink" href="#numbers" title="Permanent link">&para;</a></h3>
+<h5 id="range"><code>range</code><a class="headerlink" href="#range" title="Permanent link">&para;</a></h5>
+<pre><code>range(lower, upper)
+</code></pre>
+
+<p>Tests whether a value falls between <code>lower</code> and <code>upper</code> inclusive.</p>
+<pre><code class="yaml">rating: range(0,10)
+</code></pre>
+
+<h5 id="is_positive"><code>is_positive</code><a class="headerlink" href="#is_positive" title="Permanent link">&para;</a></h5>
+<p>Tests whether a value is positive.</p>
+<h5 id="is_negative"><code>is_negative</code><a class="headerlink" href="#is_negative" title="Permanent link">&para;</a></h5>
+<p>Tests whether a value is negative.</p>
+<h3 id="strings">Strings<a class="headerlink" href="#strings" title="Permanent link">&para;</a></h3>
+<h5 id="contains"><code>contains</code><a class="headerlink" href="#contains" title="Permanent link">&para;</a></h5>
+<pre><code>contains(substring)
+</code></pre>
+
+<p>Tests for the presence of a substring in a value.</p>
+<h5 id="regex"><code>regex</code><a class="headerlink" href="#regex" title="Permanent link">&para;</a></h5>
+<pre><code class="js">regex(expression)
+</code></pre>
+
+<p>Tests whether a value matches a regular expression.</p>
+<p>You can also use <code>=~</code> or <code>!~</code> regex comparators.</p>
+<pre><code class="js">(colname =~ &quot;L[0-9]+&quot;)
+</code></pre>
+
+<h5 id="uppercase"><code>uppercase</code><a class="headerlink" href="#uppercase" title="Permanent link">&para;</a></h5>
+<p>Tests whether a value is all uppercase.</p>
+<h5 id="lowercase"><code>lowercase</code><a class="headerlink" href="#lowercase" title="Permanent link">&para;</a></h5>
+<p>Tests whether a value is all lowercase.</p>
+<h5 id="length"><code>length</code><a class="headerlink" href="#length" title="Permanent link">&para;</a></h5>
+<pre><code>length(min_len, max_len)
+</code></pre>
+
+<p>Tests for string length in a given column.</p>
+<pre><code class="yaml"># Test for exact length match
+column: length(10)
+
+# Test for minimum length
+column: length(10, &quot;*&quot;)
+
+# Test for range of lengths
+column: length(10, 20)
+</code></pre>
+
+<h5 id="is_url"><code>is_url</code><a class="headerlink" href="#is_url" title="Permanent link">&para;</a></h5>
+<p>Tests whether a string is a valid URL</p>
+<h4 id="types">Types<a class="headerlink" href="#types" title="Permanent link">&para;</a></h4>
+<h5 id="is_numeric"><code>is_numeric</code><a class="headerlink" href="#is_numeric" title="Permanent link">&para;</a></h5>
+<p>Checks if the value numeric.</p>
+<h5 id="is_int"><code>is_int</code><a class="headerlink" href="#is_int" title="Permanent link">&para;</a></h5>
+<p>Checks if the value an integer.</p>
+<h5 id="is_bool"><code>is_bool</code><a class="headerlink" href="#is_bool" title="Permanent link">&para;</a></h5>
+<p>Tests that column contains <code>true</code>, <code>TRUE</code>, <code>false</code>, or <code>FALSE</code></p>
+<h5 id="is_string"><code>is_string</code><a class="headerlink" href="#is_string" title="Permanent link">&para;</a></h5>
+<p>Checks if the value is a string. This is done by checking that it does not look like an integer, bool, or numeric.</p>
+<h4 id="dates">Dates<a class="headerlink" href="#dates" title="Permanent link">&para;</a></h4>
+<h5 id="is_date"><code>is_date</code><a class="headerlink" href="#is_date" title="Permanent link">&para;</a></h5>
+<p>Checks whether a value is date-like using strict criteria. <code>is_date</code> will fail on ambiguous date strings. For example, <code>02/03/2020</code> is interpretted differently in Europe vs. the US but <code>2020-02-03</code> is not.</p>
+<h5 id="is_date_relaxed"><code>is_date_relaxed</code><a class="headerlink" href="#is_date_relaxed" title="Permanent link">&para;</a></h5>
+<p>Checks whether a value is date-like with potential ambiguity. <code>02/03/2020</code> would pass.</p>
+<h5 id="is_date_format"><code>is_date_format</code><a class="headerlink" href="#is_date_format" title="Permanent link">&para;</a></h5>
+<p>Check whether a column matches a specified date format. Formats can be specified as any date like this:</p>
+<pre><code>September 17, 2012, 10:10:09
+oct. 7, 70
+8/8/1965 12:00:00 AM
+2006-01-02T15:04:05+0000
+2014-04-26
+</code></pre>
+
+<pre><code>date_of_birth: is_date_format(&quot;June 10, 1987&quot;)
+</code></pre>
+
+<p>See <a href="https://github.com/araddon/dateparse/blob/master/example/main.go#L12">araddon/dateparse</a> for more examples.</p>
+<p><strong>Important!</strong> You need to escape date values containing dashes using brackets (<code>[]</code>) or a double backslash (<code>\\</code>). For example <code>2020-02-10</code> is escaped like this:</p>
+<pre><code class="yaml">collection_date: is_date_format(&quot;[2020-02-10]&quot;)
+collection_date: is_date_format(&quot;2020\\-02\\-10&quot;)
+</code></pre>
+
+<h4 id="files">Files<a class="headerlink" href="#files" title="Permanent link">&para;</a></h4>
+<h5 id="file_exists"><code>file_exists</code><a class="headerlink" href="#file_exists" title="Permanent link">&para;</a></h5>
+<p>Checks whether a file exists</p>
+<h5 id="file_min_size"><code>file_min_size</code><a class="headerlink" href="#file_min_size" title="Permanent link">&para;</a></h5>
+<p>Checks whether a file is a minimum size</p>
+<pre><code class="yaml">photo: file_min_size(&quot;1MB&quot;)
+</code></pre>
+
+<p><code>fsize</code> is a size string such as <code>100 mb</code>, <code>1G</code>, or <code>500</code>.</p>
+<h5 id="mimetype"><code>mimetype</code><a class="headerlink" href="#mimetype" title="Permanent link">&para;</a></h5>
+<p>Validates the mimetype for a given file. See <a href="https://github.com/gabriel-vasile/mimetype/blob/master/supported_mimes.md">gabriel-vasile/mimetype</a> for available mimetypes.</p>
+<pre><code class="yaml">photo: mimetype(&quot;image/jpeg&quot;)
+</code></pre>
+
+<h4 id="missing_data">Missing Data<a class="headerlink" href="#missing_data" title="Permanent link">&para;</a></h4>
+<h5 id="is_na"><code>is_na</code><a class="headerlink" href="#is_na" title="Permanent link">&para;</a></h5>
+<p>Checks whether a value is <code>NA</code>. Use <code>!is_na()</code> to restrict the presence of <code>EMPTY</code> values.</p>
+<pre><code class="yaml">name: !is_na() # tests that no NA values exist
+</code></pre>
+
+<h5 id="is_empty"><code>is_empty</code><a class="headerlink" href="#is_empty" title="Permanent link">&para;</a></h5>
+<p>Checks whether a value is <code>EMPTY</code>. Use <code>!is_empty()</code> to restrict the presence of <code>EMPTY</code> values.</p>
+<pre><code class="yaml">name: !is_empty() # tests that no EMPTY values exist
+</code></pre>
+
+<h5 id="is_missing"><code>is_missing</code><a class="headerlink" href="#is_missing" title="Permanent link">&para;</a></h5>
+<p>Returns <code>true</code> if <code>is_na()</code> or <code>is_empty()</code> is true.</p>
+<pre><code class="yaml">name: !is_empty() # tests that no NA or EMPTY values exist
+</code></pre>
+
+<h2 id="providers">Providers<a class="headerlink" href="#providers" title="Permanent link">&para;</a></h2>
+<p>Providers allow you to specify arguments in test expressions from an external data source. For example, if you want to restrict </p>
+<h3 id="schema_yaml">Schema YAML<a class="headerlink" href="#schema_yaml" title="Permanent link">&para;</a></h3>
+<p>You can append YAML data to the end of a <code>.still</code> datafile. See <a href="schema/#yaml_data">Schmema YAML Data</a> for more details.</p>
+<h3 id="yaml_file">YAML File<a class="headerlink" href="#yaml_file" title="Permanent link">&para;</a></h3>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../functions/" class="btn btn-neutral float-right" title="Functions">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../schema/" class="btn btn-neutral" title="Schema"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/danielecook/still/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../schema/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../functions/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
