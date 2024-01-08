@@ -73,7 +73,7 @@ func parseColumn(line string) Col {
 
 		latitude: in_range(-90, 90) # The latitude
 	*/
-	reColumn, err := regexp.Compile("^([^: ]+):([^$#]+)?(#.*$)?")
+	reColumn, err := regexp.Compile("^([^:]+):([^$#]+)?(#.*$)?")
 	if err != nil {
 		log.Fatal(err)
 	}
